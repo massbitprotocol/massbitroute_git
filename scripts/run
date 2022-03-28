@@ -1,0 +1,89 @@
+#!/bin/bash
+SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
+export HOME=/tmp
+cd $SITE_ROOT
+mkdir -p http.d
+source $SITE_ROOT/.env
+git="git -C $SITE_ROOT"
+diff="diff -s"
+type="git"
+cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
+nginx="$cmd nginx"
+service_dir=/massbit/massbitroute/app/src/sites/services
+_git_config() {
+	$git config --global user.name "Vu Tran"
+	$git config --global user.email "baysao@gmail.com"
+}
+_reload() {
+	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
+	$cmd _update
+	#	$cmd update
+}
+_install() {
+	mkdir -p $service_dir $SITE_ROOT/etc
+
+	user=massbit
+	pass=41d919e74993945a97972d147c4d01847e8bc1b6
+
+	service=gbc
+	git clone http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git /massbit/massbitroute/app/$service
+	git -C /massbit/massbitroute/app/$service remote set-url origin http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git
+
+	service=ssl
+	git clone http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git /etc/letsencrypt
+	git -C /etc/letsencrypt remote set-url origin http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git
+
+	service=mkagent
+	git clone http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git $SITE_ROOT/etc/$service
+	git -C $SITE_ROOT/etc/$service remote set-url origin http://$user:$pass@git.massbitroute.com/massbitroute/${service}.git
+
+	ln -sf /massbit/massbitroute/app/gbc /massbit/massbitroute/app/src/gbc
+	ln -sf /massbit/massbitroute/app/gbc/bin/openresty /usr/local/openresty
+	apt-get update
+	apt-get install -y git apache2-utils supervisor jq python-is-python2 libssl-dev \
+		fcgiwrap
+
+	systemctl enable fcgiwrap
+	systemctl start fcgiwrap
+
+	cp supervisor.conf /etc/supervisor/conf.d/${type}.conf
+	systemctl enable supervisor
+	systemctl start supervisor
+	supervisorctl update
+
+}
+
+loop() {
+	while true; do
+	    timeout 60 $0 $@
+		sleep 3
+	done
+}
+
+_monitor() {
+	is_reload=0
+	for d in /massbit/massbitroute/app/gbc \
+		$SITE_ROOT \
+		$SITE_ROOT/etc/mkagent \
+		/etc/letsencrypt; do
+		git -C $d pull origin master | grep -i "updating"
+		if [ $? -eq 0 ]; then
+			is_reload=1
+		fi
+	done
+
+	if [ $is_reload -ne 0 ]; then
+		$0 _reload
+	fi
+	$cmd start all
+
+}
+
+_run() {
+	# pkill -9 prometheus grafana-server
+	rm -rf $SITE_ROOT/tmp/*
+	sleep 3
+	$SITE_ROOT/start_server
+}
+
+$@
