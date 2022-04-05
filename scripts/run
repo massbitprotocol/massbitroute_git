@@ -19,6 +19,9 @@ _reload() {
 	$cmd _update
 	#	$cmd update
 }
+_prepare() {
+	echo "Prepare"
+}
 _install() {
 	mkdir -p $service_dir $SITE_ROOT/etc
 
@@ -55,7 +58,7 @@ _install() {
 
 loop() {
 	while true; do
-	    timeout 60 $0 $@
+		timeout 60 $0 $@
 		sleep 3
 	done
 }
