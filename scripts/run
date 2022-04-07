@@ -10,6 +10,13 @@ type="git"
 cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
 nginx="$cmd nginx"
 service_dir=/massbit/massbitroute/app/src/sites/services
+
+REPOS="/etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|master \
+/massbit/massbitroute/app/gbc|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git \
+/massbit/massbitroute/app/gbc/bin/.asdf|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_asdf.git|master \
+$SITE_ROOT|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_${TYPE}.git \
+$SITE_ROOT/etc/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git"
+
 _git_config() {
 	$git config --global user.name "Vu Tran"
 	$git config --global user.email "baysao@gmail.com"
@@ -63,17 +70,31 @@ loop() {
 	done
 }
 
+_update() {
+	echo "Update"
+	st=0
+	return $st
+}
+
 _monitor() {
 	is_reload=0
-	for d in /massbit/massbitroute/app/gbc \
-		$SITE_ROOT \
-		$SITE_ROOT/etc/mkagent \
-		/etc/letsencrypt; do
-		git -C $d pull origin master | grep -i "updating"
-		if [ $? -eq 0 ]; then
-			is_reload=1
-		fi
-	done
+	echo mbr-git >vars/TYPE
+	_update_sources $REPOS
+
+	# for d in /massbit/massbitroute/app/gbc \
+	# 	$SITE_ROOT \
+	# 	$SITE_ROOT/etc/mkagent \
+	# 	/etc/letsencrypt; do
+	# 	git -C $d pull origin master | grep -i "updating"
+	# 	if [ $? -eq 0 ]; then
+	# 		is_reload=1
+	# 	fi
+	# done
+
+	_update
+	if [ $is_reload -ne 0 ]; then
+		is_reload=$?
+	fi
 
 	if [ $is_reload -ne 0 ]; then
 		$0 _reload
