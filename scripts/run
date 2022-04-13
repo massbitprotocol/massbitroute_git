@@ -100,10 +100,14 @@ _install_repos() {
 		_git_clone $_url $_path $_branch
 	done
 }
-_install() {
+_install_one() {
 	_init
 	_prepare
 	_install_repos
+}
+
+_install() {
+	_install_one
 	_supervisor
 }
 
