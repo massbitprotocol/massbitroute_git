@@ -34,11 +34,17 @@ _repo_add() {
 	chown -R www-data.www-data data/repo/massbitroute/$_repo_name
 	chmod -R 777 data/repo/massbitroute/$_repo_name
 }
+_repo_create() {
+	_repo=$1
+	_get_passwd $_repo
+	_repo_add $_repo
+
+}
+
 _repos_create() {
 	git -C data init
 	for _repo in $repos; do
-		_get_passwd $_repo
-		_repo_add $_repo
+		_repo_create $_repo
 	done
 }
 $@
