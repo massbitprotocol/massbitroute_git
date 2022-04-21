@@ -2,7 +2,7 @@
 SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
 cd $SITE_ROOT
 
-repos=(env ssl gitdeploy apideploy gwmandeploy statdeploy)
+repos=(git env ssl gitdeploy apideploy gwmandeploy statdeploy)
 _passwd() {
 	pass=$(
 		tr </dev/urandom -dc _A-Z-a-z-0-9 | head -c${1:-32}
@@ -29,8 +29,8 @@ _get_passwd() {
 _repo_add() {
 	_repo_name=$1
 	mkdir -p data/repo/massbitroute/$_repo_name
-	git --bare init
-	git update-server-info
+	git -C data/repo/massbitroute/$_repo_name --bare init
+	git -C data/repo/massbitroute/$_repo_name update-server-info
 	chown -R www-data.www-data data/repo/massbitroute/$_repo_name
 	chmod -R 777 data/repo/massbitroute/$_repo_name
 }
