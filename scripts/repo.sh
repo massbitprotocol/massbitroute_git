@@ -25,11 +25,6 @@ _get_passwd() {
 	htpasswd -bc "data/${_repo}.htpasswd" "$_repo" "$_pass"
 	htpasswd -b "data/${_repo}.htpasswd" $(cat data/default.user)
 }
-_repos_create() {
-	for _repo in $repos; do
-		_get_passwd $_repo
-	done
-}
 
 _repo_add() {
 	_repo_name=$1
@@ -38,5 +33,11 @@ _repo_add() {
 	git update-server-info
 	chown -R www-data.www-data data/repo/massbitroute/$_repo_name
 	chmod -R 777 data/repo/massbitroute/$_repo_name
+}
+_repos_create() {
+	for _repo in $repos; do
+		_get_passwd $_repo
+		_get_add $_repo
+	done
 }
 $@
