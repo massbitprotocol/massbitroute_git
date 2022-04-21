@@ -2,7 +2,7 @@
 SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
 cd $SITE_ROOT
 
-repos=(git env ssl gitdeploy apideploy gwmandeploy statdeploy)
+repos="git env ssl gitdeploy apideploy gwmandeploy statdeploy"
 _passwd() {
 	pass=$(
 		tr </dev/urandom -dc _A-Z-a-z-0-9 | head -c${1:-32}
