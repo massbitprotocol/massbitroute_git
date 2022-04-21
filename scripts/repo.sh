@@ -28,6 +28,7 @@ _get_passwd() {
 
 _repo_add() {
 	_repo_name=$1
+	if [ -f "data/repo/massbitroute/$_repo_name/HEAD" ]; then return; fi
 	mkdir -p data/repo/massbitroute/$_repo_name
 	git -C data/repo/massbitroute/$_repo_name --bare init
 	git -C data/repo/massbitroute/$_repo_name update-server-info
@@ -41,8 +42,20 @@ _repo_create() {
 
 }
 
+_add_hosts() {
+	grep "git.$DOMAIN" /etc/hosts >/dev/null
+	if [ $? -ne 0 ]; then
+		echo "127.0.0.1 git.$DOMAIN" >>/etc/hosts
+	fi
+}
 _repos_create() {
+	source $SITE_ROOT/.env
+	source $SITE_ROOT/.env.$MBR_ENV
+	_add_hosts
+
+	rm -rf data/.git
 	git -C data init
+	git remote
 	for _repo in $repos; do
 		_repo_create $_repo
 	done
