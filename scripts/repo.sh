@@ -38,7 +38,7 @@ _repos_create() {
 	git -C data init
 	for _repo in $repos; do
 		_get_passwd $_repo
-		_get_add $_repo
+		_repo_add $_repo
 	done
 }
 $@
