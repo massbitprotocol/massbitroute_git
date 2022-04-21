@@ -35,11 +35,10 @@ export API_BRANCH=${API_BRANCH:-dev}
 export SESSION_BRANCH=${SESSION_BRANCH:-dev}
 export GIT_BRANCH=${GIT_BRANCH:-dev}
 export MKAGENT_BRANCH=${MKAGENT_BRANCH:-dev}
-
+# $SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
+# /etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
 _repo() {
 	REPOS="\
-$SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
-/etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
  $mbr_root/gbc|https://github.com/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
 $SITE_ROOT|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_${TYPE}.git|$MBR_ENV \
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
@@ -60,10 +59,10 @@ _prepare() {
 
 }
 _init() {
-	if [ -z "$GIT_PRIVATE_READ_URL" ]; then
-		echo "Need GIT_PRIVATE_READ_URL"
-		exit 1
-	fi
+	# if [ -z "$GIT_PRIVATE_READ_URL" ]; then
+	# 	echo "Need GIT_PRIVATE_READ_URL"
+	# 	exit 1
+	# fi
 	if [ ! -f "$SITE_ROOT/.env" ]; then
 		echo "$MBR_ENV" >$SITE_ROOT/.env
 	fi
