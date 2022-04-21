@@ -55,7 +55,10 @@ _repos_create() {
 
 	rm -rf data/.git
 	git -C data init
-	git remote
+	cat data/gitdeploy.user | while read _u _p; do
+		git -C data remote add origin http://$_u:$_p@git.$DOMAIN/massbitroute/${_u}.git
+	done
+
 	for _repo in $repos; do
 		_repo_create $_repo
 	done
