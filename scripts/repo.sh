@@ -1,9 +1,9 @@
 #!/bin/bash
-SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
-cd $SITE_ROOT
-source $SITE_ROOT/bin/shell_func.sh
+ROOT_DIR=$(realpath $(dirname $(realpath $0))/..)
+cd $ROOT_DIR
+source $ROOT_DIR/bin/shell_func.sh
 
-source $SITE_ROOT/.env_raw
+source $ROOT_DIR/.env_raw
 
 repos="git env ssl gitdeploy apideploy gwmandeploy statdeploy"
 _passwd() {
@@ -54,8 +54,6 @@ _add_hosts() {
 }
 _repos_create() {
 
-	# source $SITE_ROOT/.env
-	# source $SITE_ROOT/.env.$MBR_ENV
 	_add_hosts
 
 	# rm -rf data/.git
