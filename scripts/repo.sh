@@ -58,16 +58,16 @@ _add_hosts() {
 	fi
 }
 _repos_create() {
+	_git_config
 	_get_passwd_default
 	_add_hosts
+	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
+
 	cd $ROOT_DIR/data
 	rm -rf .git
 	git init
-	_git_config
-	cat $ROOT_DIR/data/gitdeploy.user
+
 	cat $ROOT_DIR/data/gitdeploy.user | while read _u _p; do
-		echo $_u
-		echo $_p
 		git -C $ROOT_DIR/data remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
 	done
 
@@ -79,6 +79,14 @@ _repos_create() {
 		git add -f *.user *.htpasswd &&
 		git commit -m update &&
 		git push --set-upstream origin $MBR_ENV
-	cd -
+
+	cd $ROOT_DIR/env
+	rm -rf .git
+	git init
+
+	cat $ROOT_DIR/data/env.user | while read _u _p; do
+		git -C $ROOT_DIR/env remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
+	done
 }
+
 $@
