@@ -1,7 +1,7 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0))/..)
 cd $ROOT_DIR
-source $ROOT_DIR/bin/shell_func.sh
+source $ROOT_DIR/scripts/base.sh
 
 source $ROOT_DIR/.env_raw
 
@@ -55,9 +55,6 @@ _add_hosts() {
 _repos_create() {
 
 	_add_hosts
-
-	# rm -rf data/.git
-	# git -C data init
 	cat data/gitdeploy.user | while read _u _p; do
 		git -C data remote add origin http://$_u:$_p@git.$DOMAIN/massbitroute/${_u}.git
 	done
