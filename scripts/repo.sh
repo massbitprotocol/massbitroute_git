@@ -61,32 +61,34 @@ _repos_create() {
 	_git_config
 	_get_passwd_default
 	_add_hosts
-	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
-
-	cd $ROOT_DIR/data
-	rm -rf .git
-	git init
-
-	cat $ROOT_DIR/data/gitdeploy.user | while read _u _p; do
-		git -C $ROOT_DIR/data remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
-	done
 
 	for _repo in $repos; do
 		_repo_create $_repo
 	done
 
-	git checkout -b $MBR_ENV &&
-		git add -f *.user *.htpasswd &&
-		git commit -m update &&
-		git push --set-upstream origin $MBR_ENV
+	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
 
-	cd $ROOT_DIR/env
-	rm -rf .git
-	git init
+	_reponame=gitdeploy
+	_userdir=$ROOT_DIR/data
+	_dir=$ROOT_DIR/data
+	_git="git -C $_dir"
+	if [ ! -d "$_dir/.git" ]; then
+		$_git init
+		cat $_userdir/${_reponame}.user | while read _u _p; do
+			$_git remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
+		done
+	else
+		cat $_userdir/${_reponame}.user | while read _u _p; do
+			$_git remote set-url origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
+		done
+		$_git pull
 
-	cat $ROOT_DIR/data/env.user | while read _u _p; do
-		git -C $ROOT_DIR/env remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
-	done
+	fi
+
+	$_git checkout -b $MBR_ENV &&
+		$_git add -f *.user *.htpasswd &&
+		$_git commit -m update &&
+		$_git push --set-upstream origin $MBR_ENV
 }
 
 $@
