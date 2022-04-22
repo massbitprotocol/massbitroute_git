@@ -63,7 +63,7 @@ _repos_create() {
 		_repo_create $_repo
 	done
 	cd data
-	git add -f * &&
+	git add -f . &&
 		git commit -m update &&
 		git push
 	cd -
