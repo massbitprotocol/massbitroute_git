@@ -57,7 +57,6 @@ _add_hosts() {
 	fi
 }
 _repos_create() {
-	cd $SITE_ROOT
 	_get_passwd_default
 	_add_hosts
 	cd data
