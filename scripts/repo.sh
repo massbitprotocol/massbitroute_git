@@ -16,9 +16,10 @@ _passwd() {
 	echo $pass
 }
 _get_passwd_default() {
-	_user="massbit"
-	_pass=$(_passwd)
 	if [ ! -f "data/default.user" ]; then
+		_user="massbit"
+		_pass=$(_passwd)
+
 		echo $_user $_pass >data/default.user
 	fi
 }
