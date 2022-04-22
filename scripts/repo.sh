@@ -58,6 +58,9 @@ _add_hosts() {
 	fi
 }
 _repos_create() {
+
+	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
+
 	_git_config
 	_get_passwd_default
 	_add_hosts
@@ -65,8 +68,6 @@ _repos_create() {
 	for _repo in $repos; do
 		_repo_create $_repo
 	done
-
-	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
 
 	_reponame=gitdeploy
 	_userdir=$ROOT_DIR/data
