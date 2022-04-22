@@ -63,9 +63,10 @@ _repos_create() {
 		_repo_create $_repo
 	done
 	cd data
-	git add -f . &&
+	git checkout -b $MBR_ENV &&
+		git add -f . &&
 		git commit -m update &&
-		git push
+		git push --set-upstream origin $MBR_ENV
 	cd -
 }
 $@
