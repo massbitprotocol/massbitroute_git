@@ -16,33 +16,33 @@ _passwd() {
 	echo $pass
 }
 _get_passwd_default() {
-	if [ ! -f "data/default.user" ]; then
+	if [ ! -f "$ROOT_DIR/data/default.user" ]; then
 		_user="massbit"
 		_pass=$(_passwd)
 
-		echo $_user $_pass >data/default.user
+		echo $_user $_pass >$ROOT_DIR/data/default.user
 	fi
 }
 _get_passwd() {
 	_repo=$1
-	if [ -f "data/${_repo}.user" ]; then return; fi
+	if [ -f "$ROOT_DIR/data/${_repo}.user" ]; then return; fi
 	_pass=$(_passwd)
 
-	echo "$_repo $_pass" >data/${_repo}.user
-	htpasswd -bc "data/${_repo}_write.htpasswd" "$_repo" "$_pass"
-	htpasswd -bc "data/${_repo}.htpasswd" "$_repo" "$_pass"
-	htpasswd -b "data/${_repo}.htpasswd" $(cat data/default.user)
+	echo "$_repo $_pass" >$ROOT_DIR/data/${_repo}.user
+	htpasswd -bc "$ROOT_DIR/data/${_repo}_write.htpasswd" "$_repo" "$_pass"
+	htpasswd -bc "$ROOT_DIR/data/${_repo}.htpasswd" "$_repo" "$_pass"
+	htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $ROOT_DIR/data/default.user)
 }
 
 _repo_add() {
 	_name=$1
 	_repo_name="${_name}.git"
-	if [ -f "data/repo/massbitroute/$_repo_name/HEAD" ]; then return; fi
-	mkdir -p data/repo/massbitroute/$_repo_name
-	git -C data/repo/massbitroute/$_repo_name --bare init
-	git -C data/repo/massbitroute/$_repo_name update-server-info
-	chown -R www-data.www-data data/repo/massbitroute/$_repo_name
-	chmod -R 777 data/repo/massbitroute/$_repo_name
+	if [ -f "$ROOT_DIR/data/repo/massbitroute/$_repo_name/HEAD" ]; then return; fi
+	mkdir -p $ROOT_DIR/data/repo/massbitroute/$_repo_name
+	git -C $ROOT_DIR/data/repo/massbitroute/$_repo_name --bare init
+	git -C $ROOT_DIR/data/repo/massbitroute/$_repo_name update-server-info
+	chown -R www-data.www-data $ROOT_DIR/data/repo/massbitroute/$_repo_name
+	chmod -R 777 $ROOT_DIR/data/repo/massbitroute/$_repo_name
 }
 _repo_create() {
 	_repo=$1
@@ -60,15 +60,15 @@ _add_hosts() {
 _repos_create() {
 	_get_passwd_default
 	_add_hosts
-	cd data
+	cd $ROOT_DIR/data
 	rm -rf .git
 	git init
 	_git_config
-	cat data/gitdeploy.user
-	cat data/gitdeploy.user | while read _u _p; do
+	cat $ROOT_DIR/data/gitdeploy.user
+	cat $ROOT_DIR/data/gitdeploy.user | while read _u _p; do
 		echo $_u
 		echo $_p
-		git -C data remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
+		git -C $ROOT_DIR/data remote add origin http://${_u}:${_p}@git.$DOMAIN/massbitroute/${_u}.git
 	done
 
 	for _repo in $repos; do
