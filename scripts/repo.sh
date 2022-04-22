@@ -1,9 +1,11 @@
 #!/bin/bash
 ROOT_DIR=$(realpath $(dirname $(realpath $0))/..)
-cd $ROOT_DIR
+
 source $ROOT_DIR/scripts/base.sh
 
 source $ROOT_DIR/.env_raw
+
+cd $ROOT_DIR
 
 repos="git env ssl gitdeploy apideploy gwmandeploy statdeploy"
 _passwd() {
@@ -55,6 +57,7 @@ _add_hosts() {
 	fi
 }
 _repos_create() {
+	cd $SITE_ROOT
 	_get_passwd_default
 	_add_hosts
 	cd data
