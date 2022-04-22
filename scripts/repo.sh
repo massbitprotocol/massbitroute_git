@@ -16,7 +16,9 @@ _passwd() {
 _get_passwd_default() {
 	_user="massbit"
 	_pass=$(_passwd)
-	echo $_user $_pass >data/default.user
+	if [ ! -f "data/default.user" ]; then
+		echo $_user $_pass >data/default.user
+	fi
 }
 _get_passwd() {
 	_repo=$1
@@ -53,7 +55,7 @@ _add_hosts() {
 	fi
 }
 _repos_create() {
-
+	_get_passwd_default
 	_add_hosts
 	cd data
 	rm -rf .git
