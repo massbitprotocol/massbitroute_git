@@ -55,6 +55,10 @@ _add_hosts() {
 _repos_create() {
 
 	_add_hosts
+	cd data
+	rm -rf .git
+	git init
+	_git_config
 	cat data/gitdeploy.user | while read _u _p; do
 		git -C data remote add origin http://$_u:$_p@git.$DOMAIN/massbitroute/${_u}.git
 	done
@@ -62,10 +66,7 @@ _repos_create() {
 	for _repo in $repos; do
 		_repo_create $_repo
 	done
-	cd data
-	rm -rf .git
-	git init
-	_git_config
+
 	git checkout -b $MBR_ENV &&
 		git add -f *.user *.htpasswd &&
 		git commit -m update &&
