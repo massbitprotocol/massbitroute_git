@@ -30,7 +30,8 @@ _get_passwd() {
 }
 
 _repo_add() {
-	_repo_name=$1
+	_name=$1
+	_repo_name="${_name}.git"
 	if [ -f "data/repo/massbitroute/$_repo_name/HEAD" ]; then return; fi
 	mkdir -p data/repo/massbitroute/$_repo_name
 	git -C data/repo/massbitroute/$_repo_name --bare init
