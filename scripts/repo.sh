@@ -64,6 +64,7 @@ _repos_create() {
 	rm -rf .git
 	git init
 	_git_config
+	cat data/gitdeploy.user
 	cat data/gitdeploy.user | while read _u _p; do
 		echo $_u
 		echo $_p
