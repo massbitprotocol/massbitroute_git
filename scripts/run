@@ -206,7 +206,7 @@ _repo_init() {
 	cd $SITE_ROOT
 	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/git_account
 	cd env
-	git init
+	if [ ! -d ".git" ]; then git init; fi
 	GIT_ENV_WRITE=$(cat $SITE_ROOT/vars/GIT_ENV_WRITE)
 	git remote add origin http://$GIT_ENV_WRITE@$GIT_DOMAIN/massbitroute/env.git
 	git checkout -b $MBR_ENV
