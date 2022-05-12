@@ -215,15 +215,21 @@ _repo_init() {
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	else
+		GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
 	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_IP" ]; then
 		echo "$ip" >$VARS/GIT_PRIVATE_IP
+	else
+		GIT_PRIVATE_IP=$(cat $VARS/GIT_PRIVATE_IP)
 	fi
 
-	GIT_PRIVATE_READ=massbit:$(_passwd)
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
+		GIT_PRIVATE_READ=massbit:$(_passwd)
 		echo "$GIT_PRIVATE_READ" >$VARS/GIT_PRIVATE_READ
+	else
+		GIT_PRIVATE_READ=$(cat $VARS/GIT_PRIVATE_READ)
 	fi
 	if [ ! -f "$VARS/GIT_PRIVATE_READ_URL" ]; then
 		echo "http://$GIT_PRIVATE_READ@$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_READ_URL
