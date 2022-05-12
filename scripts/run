@@ -149,6 +149,46 @@ _monitor() {
 
 }
 
+_passwd() {
+	pass=$(
+		tr </dev/urandom -dc _A-Z-a-z-0-9 | head -c${1:-32}
+		echo
+	)
+	echo $pass
+}
+
+_repo_add_file() {
+	_name=$1
+	_repo_name="${_name}.git"
+	if [ -f "$ROOT_DIR/data/repo/massbitroute/$_repo_name/HEAD" ]; then return; fi
+	mkdir -p $ROOT_DIR/data/repo/massbitroute/$_repo_name
+	git -C $ROOT_DIR/data/repo/massbitroute/$_repo_name --bare init
+	git -C $ROOT_DIR/data/repo/massbitroute/$_repo_name update-server-info
+	chown -R www-data.www-data $ROOT_DIR/data/repo/massbitroute/$_repo_name
+	chmod -R 777 $ROOT_DIR/data/repo/massbitroute/$_repo_name
+}
+_repo_add() {
+	_repo=$1
+	_repo_add_file $_repo
+	_repo_case=GIT_${_repo^^}_WRITE
+	if [ -f "$VARS/$_repo_case" ]; then return; fi
+	_pass=$(_passwd)
+	htpasswd -bc "$ROOT_DIR/data/${_repo}_write.htpasswd" "$_repo" "$_pass"
+	htpasswd -bc "$ROOT_DIR/data/${_repo}.htpasswd" "$_repo" "$_pass"
+	htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $VARS/GIT_PRIVATE_READ | sed 's/:/ /g')
+	echo "${_repo}:${_pass}" >$VARS/$_repo_case
+}
+_repo_init() {
+	repo_cmd=$ROOT_DIR/scripts/repo.sh
+	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
+	git -C $ROOT_DIR/env init
+	VARS=$ROOT_DIR/vars
+	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
+		echo "massbit:$(_passwd)" >$VARS/GIT_PRIVATE_READ
+	fi
+
+}
+
 _run() {
 	rm -rf $SITE_ROOT/tmp/*
 	$SITE_ROOT/start_server
