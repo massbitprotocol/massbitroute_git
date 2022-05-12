@@ -198,7 +198,7 @@ _add_host() {
 
 _repo_init() {
 	_git_config
-	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
+	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
 	ip=$(curl http://ipv4.canhazip.com)
 	GIT_PRIVATE_DOMAIN=git.$DOMAIN
 	_add_host $GIT_PRIVATE_DOMAIN $ip
