@@ -208,7 +208,7 @@ _repo_init() {
 	cd env
 	git init
 	GIT_ENV_WRITE=$(cat $SITE_ROOT/vars/GIT_ENV_WRITE)
-	git remote add origin http://$GIT_ENV_WRITE:$GIT_DOMAIN/massbitroute/env.git
+	git remote add origin http://$GIT_ENV_WRITE@$GIT_DOMAIN/massbitroute/env.git
 	git checkout -b $MBR_ENV
 
 	git add .
