@@ -179,6 +179,8 @@ _repo_add() {
 	htpasswd -bc "$ROOT_DIR/data/${_repo}.htpasswd" "$_repo" "$_pass"
 	htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $VARS/GIT_PRIVATE_READ | sed 's/:/ /g')
 	echo "${_repo}:${_pass}" >$VARS/$_repo_case
+	cd $SITE_ROOT
+	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/$MBR_ENV/git_account
 }
 _repo_init() {
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
