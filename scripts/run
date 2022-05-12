@@ -169,16 +169,22 @@ _repo_add_file() {
 	chown -R www-data.www-data $ROOT_DIR/data/repo/massbitroute/$_repo_name
 	chmod -R 777 $ROOT_DIR/data/repo/massbitroute/$_repo_name
 }
+_vars_to_env() {
+	cd $SITE_ROOT
+	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/git_account
+}
 _repo_add() {
 	_repo=$1
 	_repo_add_file $_repo
 	_repo_case=GIT_${_repo^^}_WRITE
-	if [ -f "$VARS/$_repo_case" ]; then return; fi
-	_pass=$(_passwd)
-	htpasswd -bc "$ROOT_DIR/data/${_repo}_write.htpasswd" "$_repo" "$_pass"
-	htpasswd -bc "$ROOT_DIR/data/${_repo}.htpasswd" "$_repo" "$_pass"
-	htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $VARS/GIT_PRIVATE_READ | sed 's/:/ /g')
-	echo "${_repo}:${_pass}" >$VARS/$_repo_case
+	if [ ! -f "$VARS/$_repo_case" ]; then
+		_pass=$(_passwd)
+		htpasswd -bc "$ROOT_DIR/data/${_repo}_write.htpasswd" "$_repo" "$_pass"
+		htpasswd -bc "$ROOT_DIR/data/${_repo}.htpasswd" "$_repo" "$_pass"
+		htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $VARS/GIT_PRIVATE_READ | sed 's/:/ /g')
+		echo "${_repo}:${_pass}" >$VARS/$_repo_case
+	fi
+	_vars_to_env
 
 }
 _add_host() {
@@ -189,28 +195,27 @@ _add_host() {
 		echo "$_ip $_host" >>/etc/hosts
 	fi
 }
+
 _repo_init() {
 	_git_config
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
 	ip=$(curl http://ipv4.canhazip.com)
-	GIT_DOMAIN=git.$DOMAIN
-	_add_host $GIT_DOMAIN $ip
+	GIT_PRIVATE_DOMAIN=git.$DOMAIN
+	_add_host $GIT_PRIVATE_DOMAIN $ip
 
-	if [ ! -f "$VARS/GIT_DOMAIN" ]; then
-		echo "$ip $GIT_DOMAIN" >$VARS/GIT_DOMAIN
+	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
+		echo "$ip $GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
 		echo "massbit:$(_passwd)" >$VARS/GIT_PRIVATE_READ
 	fi
-	cd $SITE_ROOT
-	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/git_account
-	cd env
+	_vars_to_env
+	cd $SITE_ROOT/env
 	if [ ! -d ".git" ]; then git init; fi
 	GIT_ENV_WRITE=$(cat $SITE_ROOT/vars/GIT_ENV_WRITE)
-	git remote add origin http://$GIT_ENV_WRITE@$GIT_DOMAIN/massbitroute/env.git
+	git remote add origin http://$GIT_ENV_WRITE@$GIT_PRIVATE_DOMAIN/massbitroute/env.git
 	git checkout -b $MBR_ENV
-
 	git add .
 	git commit -m "Add env"
 	git push -u origin $MBR_ENV
