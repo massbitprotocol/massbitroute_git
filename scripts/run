@@ -19,6 +19,7 @@ nginx="$cmd nginx"
 
 mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
+ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
 
 export MBR_ENV=${MBR_ENV:-dev}
