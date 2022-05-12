@@ -179,7 +179,6 @@ _repo_add() {
 	echo "${_repo}:${_pass}" >$VARS/$_repo_case
 }
 _repo_init() {
-	repo_cmd=$ROOT_DIR/scripts/repo.sh
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
 	git -C $ROOT_DIR/env init
 	VARS=$ROOT_DIR/vars
