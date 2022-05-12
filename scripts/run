@@ -19,6 +19,7 @@ nginx="$cmd nginx"
 
 mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
+VARS=$ROOT_DIR/vars
 
 export MBR_ENV=${MBR_ENV:-dev}
 export MBRAPP_BRANCH=${MBRAPP_BRANCH:-$MBR_ENV}
@@ -181,7 +182,7 @@ _repo_add() {
 _repo_init() {
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
 	git -C $ROOT_DIR/env init
-	VARS=$ROOT_DIR/vars
+
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
 		echo "massbit:$(_passwd)" >$VARS/GIT_PRIVATE_READ
 	fi
