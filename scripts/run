@@ -206,6 +206,7 @@ _update_repo_branch() {
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
 	git remote add origin http://$_account@$GIT_PRIVATE_DOMAIN/massbitroute/${_name1}.git
 	git checkout -b $MBR_ENV
+	touch Readme.md
 	git add .
 	git commit -m "Add env"
 	git push -u origin $MBR_ENV
