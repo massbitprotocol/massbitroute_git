@@ -181,11 +181,24 @@ _repo_add() {
 	echo "${_repo}:${_pass}" >$VARS/$_repo_case
 
 }
+_add_host() {
+	_host=$1
+	_ip=$2
+	grep "$_host" /etc/hosts >/dev/null
+	if [ $? -ne 0 ]; then
+		echo "$_ip $_host" >>/etc/hosts
+	fi
+}
 _repo_init() {
 	_git_config
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
-	git -C $ROOT_DIR/env init
-	git -C $ROOT_DIR/env checkout -b $MBR_ENV
+	ip=$(curl http://ipv4.canhazip.com)
+	GIT_DOMAIN=git.$DOMAIN
+	_add_host $GIT_DOMAIN $ip
+
+	if [ ! -f "$VARS/GIT_DOMAIN" ]; then
+		echo "$ip $GIT_DOMAIN" >$VARS/GIT_DOMAIN
+	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
 		echo "massbit:$(_passwd)" >$VARS/GIT_PRIVATE_READ
@@ -193,9 +206,14 @@ _repo_init() {
 	cd $SITE_ROOT
 	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/git_account
 	cd env
+	git init
+	GIT_ENV_WRITE=$(cat $SITE_ROOT/vars/GIT_ENV_WRITE)
+	git remote add origin http://$GIT_ENV_WRITE:$GIT_DOMAIN/massbitroute/env.git
+	git checkout -b $MBR_ENV
+
 	git add .
 	git commit -m "Add env"
-	git push origin $MBR_ENV
+	git push -u origin $MBR_ENV
 }
 
 _run() {
