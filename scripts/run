@@ -182,6 +182,7 @@ _repo_add() {
 
 }
 _repo_init() {
+	_git_config
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env/$MBR_ENV
 	git -C $ROOT_DIR/env init
 	git -C $ROOT_DIR/env checkout -b $MBR_ENV
@@ -191,6 +192,10 @@ _repo_init() {
 	fi
 	cd $SITE_ROOT
 	ls vars | grep ^GIT_ | while read f; do echo export $f=$(cat vars/$f); done >$SITE_ROOT/env/git_account
+	cd env
+	git add .
+	git commit -m "Add env"
+	git push
 }
 
 _run() {
