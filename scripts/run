@@ -195,7 +195,7 @@ _repo_init() {
 	cd env
 	git add .
 	git commit -m "Add env"
-	git push
+	git push origin $MBR_ENV
 }
 
 _run() {
