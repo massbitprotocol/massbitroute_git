@@ -204,7 +204,11 @@ _repo_init() {
 	_add_host $GIT_PRIVATE_DOMAIN $ip
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
-		echo "$ip $GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	fi
+
+	if [ ! -f "$VARS/GIT_PRIVATE_IP" ]; then
+		echo "$ip" >$VARS/GIT_PRIVATE_IP
 	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
