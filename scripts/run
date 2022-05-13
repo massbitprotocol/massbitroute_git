@@ -171,7 +171,7 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
-	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git
+	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 }
 _repo_add() {
 	_repo=$1
