@@ -261,7 +261,7 @@ EOF
 	fi
 	# if [ ! -f "zones/${DOMAIN}" ]; then
 	#
-	sed "s/_DOMAIN_/${DOMAIN}/g" $_dir/etc/zone.tpl >$_dir/data/zones/${DOMAIN} # fi	# fi
+	#	sed "s/_DOMAIN_/${DOMAIN}/g" $_dir/etc/zone.tpl >$_dir/data/zones/${DOMAIN} # fi	# fi
 
 	# 	if [ ! -f "$_dir/zones/${DOMAIN}" ]; then
 	# 		cp $_dir/data/zones/${DOMAIN} $_dir/zones/${DOMAIN}
