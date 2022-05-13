@@ -196,8 +196,92 @@ _add_host() {
 	fi
 }
 
+_repo_gwmandeploy() {
+	_dir=$1
+
+	cd $_dir
+	mkdir -p zones
+	for _d in monitors.d failover.d weighted.d multivalue.d datacenter.d geolocation.d/maps.d geolocation.d/resources.d; do
+		_dir=conf.d/$_d
+		mkdir -p $_dir
+		touch $_dir/_default
+	done
+
+	if [ ! -f "$conf.d/monitors.d/gateway" ]; then
+		cat >$conf.d/monitors.d/gateway <<EOF
+ gateway_check => {
+    plugin => tcp_connect,
+    port => 443,
+    up_thresh => 20,
+    ok_thresh => 10,
+    down_thresh => 10,
+    interval => 10,
+    timeout => 3,
+  }
+EOF
+	fi
+	# if [ ! -f "zones/${DOMAIN}" ]; then
+	#
+	sed "s/_DOMAIN_/${DOMAIN}/g" $_dir/etc/zone.tpl >$_dir/data/zones/${DOMAIN} # fi	# fi
+
+	# 	if [ ! -f "$_dir/zones/${DOMAIN}" ]; then
+	# 		cp $_dir/data/zones/${DOMAIN} $_dir/zones/${DOMAIN}
+	# 	fi
+	# 	if [ ! -f "$_dir/config" ]; then
+	# 		cat $_dir/config <<EOF
+	# options => {
+	#     run_dir = $SITE_ROOT/run
+	#     state_dir = $SITE_ROOT/run
+	#     tcp_threads => 1
+	#     udp_threads => 1
+	#     edns_client_subnet => true
+	#     zones_default_ttl => 3600
+	#     listen => [127.0.0.1]
+	#     dns_port = 5300
+	# }
+
+	# service_types => {
+	#     $include{data/conf.d/monitors.d/*}
+	# }
+
+	# plugins => {
+	#     simplefo => {
+	#         $include{data/conf.d/failover.d/*}
+	#     }
+	#     weighted => {
+	#             $include{data/conf.d/weighted.d/*}
+	#     }
+	#     multifo => {
+	#             $include{data/conf.d/multivalue.d/*}
+	#     }
+
+	#     metafo => {
+	#         resources => {
+	#             $include{data/conf.d/datacenter.d/*}
+	#         }
+	#     }
+	#     geoip =>  {
+	#             maps => {
+	#                 $include{data/conf.d/geolocation.d/maps.d/*}
+	#             }
+	#             resources => {
+	#                 $include{data/conf.d/geolocation.d/resources.d/*}
+	#             }
+	#     }
+	# }
+	# EOF
+	# 	fi
+}
+
 _update_repo_branch() {
 	_name1=$1
+
+	case $_name1 in
+	gwmandeploy)
+		_repo_gwmandeploy $SITE_ROOT/${_name1}
+		;;
+	esac
+
 	_name=${_name1^^}
 	mkdir -p $SITE_ROOT/${_name1}
 	cd $SITE_ROOT/${_name1}
