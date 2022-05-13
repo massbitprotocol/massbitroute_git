@@ -207,7 +207,7 @@ _repo_gwmandeploy() {
 		touch $_dir/_default
 	done
 
-	_f=$conf.d/geolocation.d/resources.d/_generic
+	_f=conf.d/geolocation.d/resources.d/_generic
 	if [ ! -f "$_f" ]; then
 		cat >$_f <<EOF
  generic-resource => {
@@ -224,7 +224,7 @@ _repo_gwmandeploy() {
 EOF
 	fi
 
-	_f=$conf.d/geolocation.d/maps.d/_generic
+	_f=conf.d/geolocation.d/maps.d/_generic
 	if [ ! -f "$_f" ]; then
 		cat >$_f <<EOF
 generic-map => {
