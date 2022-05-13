@@ -245,8 +245,9 @@ generic-map => {
 EOF
 	fi
 
-	if [ ! -f "conf.d/monitors.d/gateway" ]; then
-		cat >conf.d/monitors.d/gateway <<EOF
+	_f=conf.d/monitors.d/gateway
+	if [ ! -f "$_f" ]; then
+		cat >$_f <<EOF
  gateway_check => {
     plugin => tcp_connect,
     port => 443,
