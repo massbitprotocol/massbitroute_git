@@ -326,6 +326,7 @@ EOF
 	# }
 	# EOF
 	# 	fi
+	cd $SITE_ROOT
 }
 
 _update_repo_branch() {
