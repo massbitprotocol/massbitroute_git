@@ -207,6 +207,44 @@ _repo_gwmandeploy() {
 		touch $_dir/_default
 	done
 
+	_f=$conf.d/geolocation.d/resources.d/_generic
+	if [ ! -f "$_f" ]; then
+		cat >$_f <<EOF
+ generic-resource => {
+                map => generic-map
+                dcmap => {
+                    Ha-Noi => [
+		    127.0.0.1
+                    ]
+                    HCM => [
+		    127.0.0.1	
+                    ]
+                }
+            }
+EOF
+	fi
+
+	_f=$conf.d/geolocation.d/maps.d/_generic
+	if [ ! -f "$_f" ]; then
+		cat >$_f <<EOF
+generic-map => {
+                nets => nets.VN
+                geoip2_db => GeoIP2-City.mmdb
+                datacenters => [Ha-Noi HCM]
+                map => {
+                    # Use ISO 3166-2 official names
+                    AS => {
+                        VN => {
+                            00 => [Ha-Noi HCM]    # Không xác định
+                        }
+                        default => [Ha-Noi HCM]   # Các nước Asian
+                    }
+                    default => [Ha-Noi HCM]       # Các châu lục khác
+                }
+            }
+EOF
+	fi
+
 	if [ ! -f "$conf.d/monitors.d/gateway" ]; then
 		cat >$conf.d/monitors.d/gateway <<EOF
  gateway_check => {
