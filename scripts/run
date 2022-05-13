@@ -207,6 +207,22 @@ _repo_gwmandeploy() {
 		touch $_dir/_default
 	done
 
+	_f=conf.d/datacenter.d/_generic
+	if [ ! -f "$_f" ]; then
+		cat >$_f <<EOF
+  generic-datacenter => {
+        datacenters => [ Ha-Noi HCM ],
+        dcmap => {
+                    Ha-Noi => [
+                        127.0.0.1
+                    ]
+                    HCM => [
+		      127.0.0.1
+                    ]
+                }
+      }
+EOF
+	fi
 	_f=conf.d/geolocation.d/resources.d/_generic
 	if [ ! -f "$_f" ]; then
 		cat >$_f <<EOF
