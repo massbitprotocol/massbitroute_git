@@ -6,3 +6,4 @@ vars/
 data
 /.env_raw
 /src/env.lua
+/env/
