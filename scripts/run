@@ -262,7 +262,7 @@ generic-map => {
 EOF
 	fi
 
-	_f=conf.d/monitors.d/gateway
+	_f=conf.d/monitors.d/_gateway
 	if [ ! -f "$_f" ]; then
 		cat >$_f <<EOF
  gateway_check => {
