@@ -383,7 +383,7 @@ _repo_init() {
 	fi
 
 	_vars_to_env
-	for _r in env ssl gwmandeploy apideploy statdeploy; do
+	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
 		_update_repo_branch $_r
 	done
 }
