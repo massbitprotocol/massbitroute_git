@@ -24,7 +24,7 @@ _repo() {
 	export GIT_BRANCH=${GIT_BRANCH:-$MBR_DEV}
 	export MKAGENT_BRANCH=${MKAGENT_BRANCH:-$MBR_ENV}
 	REPOS="\
- $mbr_root/gbc|GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
+ $mbr_root/gbc|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
   $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
