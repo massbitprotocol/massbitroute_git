@@ -105,6 +105,7 @@ _install_repos() {
 	done
 }
 _install_one() {
+	_repo
 	_init
 	_prepare
 	_install_repos
