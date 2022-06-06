@@ -4,6 +4,7 @@ db/
 logs/
 vars/
 data
+.env
 /.env_raw
 /src/env.lua
 /env/
