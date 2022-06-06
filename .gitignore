@@ -8,3 +8,7 @@ data
 /.env_raw
 /src/env.lua
 /env/
+/apideploy/
+/gwmandeploy/
+/monitordeploy/
+/ssl/
