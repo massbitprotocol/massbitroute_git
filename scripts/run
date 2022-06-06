@@ -394,11 +394,14 @@ _repo_init() {
 		_update_repo_branch $_r
 	done
 }
-# _repo_create() {
-# 	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
-# 		_repo_add $_r
-# 	done
-# }
+
+_repo_clear() {
+	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
+		rm -rf $SITE_ROOT/$_r
+		rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
+	done
+	rm $SITE_ROOT/vars/GIT_*
+}
 
 _run() {
 	rm -rf $SITE_ROOT/tmp/*
