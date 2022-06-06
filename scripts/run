@@ -43,7 +43,7 @@ _repo() {
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
 	REPOS="\
- $mbr_root/gbc|https://github.com/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
+ $mbr_root/gbc|GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
   $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
