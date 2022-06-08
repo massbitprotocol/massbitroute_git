@@ -337,6 +337,12 @@ _update_repo_branch() {
 	git commit -m "Add env"
 	git push -u origin $MBR_ENV
 }
+_repo_create_default() {
+	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
+		_repo_add $_r
+		_update_repo_branch $_r
+	done
+}
 _repo_init() {
 	_git_config
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
@@ -367,10 +373,8 @@ _repo_init() {
 	fi
 
 	_vars_to_env
-	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
-		_repo_add $_r
-		_update_repo_branch $_r
-	done
+	_repo_create_default
+
 }
 
 _repo_clear() {
@@ -388,10 +392,7 @@ _run() {
 
 _update() {
 	echo "Update"
-
-	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy nodedeploy gatewaydeploy; do
-		_repo_add $_r
-	done
+	_repo_create_default
 
 	_update_repos
 	_st_update=$?
