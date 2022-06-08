@@ -338,7 +338,7 @@ _update_repo_branch() {
 	git push -u origin $MBR_ENV
 }
 _repo_create_default() {
-	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
+	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy nodedeploy gatewaydeploy; do
 		_repo_add $_r
 		_update_repo_branch $_r
 	done
