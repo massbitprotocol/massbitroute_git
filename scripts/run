@@ -53,6 +53,12 @@ VARS=$ROOT_DIR/vars
 
 # _repo
 
+_docker_build() {
+	docker-compose -f install/mbr/docker-compose.yml build $@
+}
+_docker_up() {
+	docker-compose -f install/mbr/docker-compose.yml up $@
+}
 _reload() {
 	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
 	$cmd _update
