@@ -96,7 +96,9 @@ _supervisor() {
 
 	mkdir -p /etc/supervisor/conf.d
 	cp supervisor.conf /etc/supervisor/conf.d/${TYPE}.conf
-	supervisorctl update
+	if [ "MBR_MODE" != "docker" ]; then
+		supervisorctl update
+	fi
 }
 
 _install_repos() {
