@@ -54,10 +54,14 @@ VARS=$ROOT_DIR/vars
 # _repo
 
 _docker_build() {
-	docker-compose -f install/mbr/docker-compose.yml build $@
+	env=$1
+	shift
+	docker-compose -f install/mbr/docker-compose-$env.yml build $@
 }
 _docker_up() {
-	docker-compose -f install/mbr/docker-compose.yml up $@
+	env=$1
+	shift
+	docker-compose -f install/mbr/docker-compose-$env.yml up $@
 }
 _reload() {
 	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
