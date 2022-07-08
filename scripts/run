@@ -4,7 +4,7 @@ SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
 mkdir -p $SITE_ROOT
 
 export HOME=$SITE_ROOT
-
+export GIT_PUBLIC_URL="https://github.com"
 _repo() {
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
@@ -53,16 +53,21 @@ VARS=$ROOT_DIR/vars
 
 # _repo
 
-_docker_build() {
-	env=$1
-	shift
-	docker-compose -f install/mbr/docker-compose-$env.yml build $@
+_docker() {
+	cmd=$1
+	env=$2
+	bran=$3
+	ver=$4
+	shift 4
+	tmp=$(mktemp)
+	sed "s/_BRANCH_/$bran/g" install/mbr/docker-compose-$env.yml >$tmp
+	sed "s/_VER_/$ver/g" -i $tmp
+	sed "s/_ENV_/$env/g" -i $tmp
+	cat $tmp
+	docker-compose -f $tmp $cmd $@
+	rm $tmp
 }
-_docker_up() {
-	env=$1
-	shift
-	docker-compose -f install/mbr/docker-compose-$env.yml up $@
-}
+
 _reload() {
 	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
 	$cmd _update
@@ -81,7 +86,10 @@ _init() {
 	# 	exit 1
 	# fi
 	if [ ! -f "$SITE_ROOT/.env" ]; then
-		echo "$MBR_ENV" >$SITE_ROOT/.env
+		cat <<EOF >$SITE_ROOT/.env
+export GIT_PUBLIC_URL="https://github.com"
+export MBR_ENV=$MBR_ENV
+EOF
 	fi
 
 	source $SITE_ROOT/.env
@@ -97,8 +105,8 @@ _init() {
 _supervisor() {
 	ln -sf /massbit/massbitroute/app/gbc /massbit/massbitroute/app/src/gbc
 	ln -sf /massbit/massbitroute/app/gbc/bin/openresty /usr/local/openresty
-	apt-get update
-	apt-get install -y git apache2-utils supervisor jq python-is-python2 libssl-dev libmaxminddb-dev fcgiwrap cron
+	# apt-get update
+	# apt-get install -y git apache2-utils supervisor jq python-is-python2 libssl-dev libmaxminddb-dev fcgiwrap cron
 	if [ -f "/usr/bin/systemctl" ]; then
 		systemctl enable supervisor
 		systemctl start supervisor
@@ -405,6 +413,14 @@ _run() {
 
 _update() {
 	echo "Update"
+
+	if [ ! -f "$SITE_ROOT/.env" ]; then
+		cat <<EOF >$SITE_ROOT/.env
+export GIT_PUBLIC_URL="https://github.com"
+export MBR_ENV=$MBR_ENV
+EOF
+	fi
+
 	_repo_create_default
 
 	_update_repos
