@@ -24,6 +24,7 @@ _git_clone() {
 		git clone $_url $_dir -b $_branch
 		git -C $_dir fetch --all
 		git -C $_dir branch --set-upstream-to=origin/$_branch
+
 	else
 		git -C $_dir remote -v | grep 'git@' >/dev/null
 		if [ $? -ne 0 ]; then
@@ -49,12 +50,15 @@ _update_sources() {
 		_url=$(echo $_pathgit | cut -d'|' -f2)
 		_branch=$(echo $_pathgit | cut -d'|' -f3)
 		if [ -z "$_branch" ]; then _branch=$branch; fi
-		git -C $_path remote -v | grep 'git@' >/dev/null
-		if [ $? -ne 0 ]; then
+		if [ ! -d "$_path/.git" ]; then
+			git clone $_url $_path -b $_branch
+			git -C $_path fetch --all
+			git -C $_path branch --set-upstream-to=origin/$_branch
+			_is_reload=1
+		else
 
 			git -C $_path fetch --all
 			git -C $_path checkout $_branch
-
 			tmp="$(git -C $_path pull 2>&1)"
 
 			echo "$tmp" | grep -i "updating"
@@ -63,7 +67,9 @@ _update_sources() {
 			if [ $st -eq 0 ]; then
 				_is_reload=1
 			fi
+
 		fi
+
 	done
 	return $_is_reload
 }
