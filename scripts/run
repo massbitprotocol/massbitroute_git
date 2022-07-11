@@ -102,7 +102,7 @@ _supervisor() {
 
 	mkdir -p /etc/supervisor/conf.d
 	cp supervisor.conf /etc/supervisor/conf.d/${TYPE}.conf
-	if [ "$MBR_MODE" != "docker" ]; then()l
+	if [ "$MBR_MODE" != "docker" ]; then
 		supervisorctl update
 	fi
 }
