@@ -53,21 +53,6 @@ VARS=$ROOT_DIR/vars
 
 # _repo
 
-_docker() {
-	cmd=$1
-	env=$2
-	bran=$3
-	ver=$4
-	shift 4
-	tmp=$(mktemp)
-	sed "s/_BRANCH_/$bran/g" install/mbr/docker-compose-$env.yml >$tmp
-	sed "s/_VER_/$ver/g" -i $tmp
-	sed "s/_ENV_/$env/g" -i $tmp
-	cat $tmp
-	docker-compose -f $tmp $cmd $@
-	rm $tmp
-}
-
 _reload() {
 	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
 	$cmd _update
@@ -85,21 +70,24 @@ _init() {
 	# 	echo "Need GIT_PRIVATE_READ_URL"
 	# 	exit 1
 	# fi
-	if [ ! -f "$SITE_ROOT/.env" ]; then
-		cat <<EOF >$SITE_ROOT/.env
+	# if [ ! -f "$SITE_ROOT/.env" ]; then
+	cat <<EOF >$SITE_ROOT/.env
 export GIT_PUBLIC_URL="https://github.com"
 export MBR_ENV=$MBR_ENV
 EOF
-	fi
+	# fi
 
 	source $SITE_ROOT/.env
-
-	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git /massbit/massbitroute/app/src/env $MBR_ENV
-	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
-
-	bash $SITE_ROOT/cmd_server _env
-	source $SITE_ROOT/.env_raw
 	_repo
+	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git $SITE_ROOT/env $MBR_ENV
+	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
+	# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
+	# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
+
+	_repo
+	# bash $SITE_ROOT/cmd_server _env
+	# source $SITE_ROOT/.env_raw
+
 }
 
 _supervisor() {
@@ -114,15 +102,17 @@ _supervisor() {
 
 	mkdir -p /etc/supervisor/conf.d
 	cp supervisor.conf /etc/supervisor/conf.d/${TYPE}.conf
-	if [ "$MBR_MODE" != "docker" ]; then
+	if [ "$MBR_MODE" != "docker" ]; then()l
 		supervisorctl update
 	fi
 }
 
 _install_repos() {
 	_git_config
-	_repo
+
+	echo $REPOS
 	for _pathgit in $REPOS; do
+		_repo
 		_path=$(echo $_pathgit | cut -d'|' -f1)
 		_url=$(echo $_pathgit | cut -d'|' -f2)
 		_branch=$(echo $_pathgit | cut -d'|' -f3)
