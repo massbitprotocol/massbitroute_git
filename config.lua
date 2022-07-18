@@ -21,16 +21,6 @@ stdout_logfile=_SITE_ROOT_/../mkagent/logs/monitor_client.log
     ]]
     },
     supervisor = [[
-[program:fcgiwrap]
-command=/usr/sbin/fcgiwrap -f
-autorestart=true
-redirect_stderr=true
-stopasgroup=true
-killasgroup=true
-stopsignal=INT
-stdout_logfile=_SITE_ROOT_/../mkagent/logs/fcgiwrap.log
-
-
 
 ]]
 }

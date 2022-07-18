@@ -429,7 +429,7 @@ _update() {
 }
 
 _monitor() {
-
+	/etc/init.d/fcgiwrap start
 	_update
 
 	is_reload=$?
