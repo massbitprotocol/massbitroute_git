@@ -21,6 +21,12 @@ service_dir=$mbr_root/src/sites/services
 ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
 
+if [ -n "$DOMAIN" ]; then
+	GIT_PRIVATE_DOMAIN=git.$DOMAIN
+else
+	echo "$DOMAIN not define"
+	exit 1
+fi
 _repo() {
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
@@ -359,7 +365,7 @@ _repo_init() {
 	_git_config
 	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
 	ip=$(curl http://ipv4.canhazip.com)
-	GIT_PRIVATE_DOMAIN=git.$DOMAIN
+	# GIT_PRIVATE_DOMAIN=git.$DOMAIN
 	_add_host $GIT_PRIVATE_DOMAIN $ip
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
