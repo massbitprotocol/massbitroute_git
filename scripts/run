@@ -54,6 +54,11 @@ EOF
 	if [ -n "$DOMAIN" ]; then
 		export GIT_PRIVATE_DOMAIN=git.$DOMAIN
 		echo $GIT_PRIVATE_DOMAIN >$VARS/GIT_PRIVATE_DOMAIN
+		grep "127.0.0.1 $GIT_PRIVATE_DOMAIN" /etc/hosts >/dev/null
+		if [ $? -ne 0 ]; then
+			sed "/$GIT_PRIVATE_DOMAIN/d" -i /etc/hosts
+			echo 127.0.0.1 $GIT_PRIVATE_DOMAIN >>/etc/hosts
+		fi
 	else
 		echo "$DOMAIN not define"
 		exit 1
