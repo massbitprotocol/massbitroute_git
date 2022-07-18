@@ -52,7 +52,7 @@ EOF
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
 	if [ -n "$DOMAIN" ]; then
-		GIT_PRIVATE_DOMAIN=git.$DOMAIN
+		export GIT_PRIVATE_DOMAIN=git.$DOMAIN
 	else
 		echo "$DOMAIN not define"
 		exit 1
