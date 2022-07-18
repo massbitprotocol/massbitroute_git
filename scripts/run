@@ -84,7 +84,7 @@ _init() {
 	# EOF
 	# fi
 
-	source $SITE_ROOT/.env
+	# source $SITE_ROOT/.env
 	_repo
 	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git $SITE_ROOT/data/deploy/env $MBR_ENV
 	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
