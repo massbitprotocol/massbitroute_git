@@ -22,6 +22,13 @@ ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
 
 _repo() {
+	if [ ! -f "$SITE_ROOT/.env" ]; then
+		cat <<EOF >$SITE_ROOT/.env
+export GIT_PUBLIC_URL="https://github.com"
+export MBR_ENV=$MBR_ENV
+EOF
+	fi
+
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
 	export MBR_ENV=${MBR_ENV:-dev}
@@ -52,13 +59,6 @@ _repo() {
 	fi
 }
 _repo
-# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
-# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-
-# $SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
-# /etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
-
-# _repo
 
 _reload() {
 	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
@@ -86,7 +86,7 @@ EOF
 
 	source $SITE_ROOT/.env
 	_repo
-	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git $SITE_ROOT/env $MBR_ENV
+	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git $SITE_ROOT/data/deploy/env $MBR_ENV
 	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
 	# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
@@ -173,7 +173,7 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
-	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
+	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/data/deploy/env/git.env
 }
 _repo_add() {
 	_repo=$1
@@ -335,15 +335,16 @@ EOF
 _update_repo_branch() {
 	_name1=$1
 
+	mkdir -p $SITE_ROOT/data/deploy
 	case $_name1 in
 	gwmandeploy)
-		_repo_gwmandeploy $SITE_ROOT/${_name1}
+		_repo_gwmandeploy $SITE_ROOT/data/deploy/${_name1}
 		;;
 	esac
 
 	_name=${_name1^^}
-	mkdir -p $SITE_ROOT/${_name1}
-	cd $SITE_ROOT/${_name1}
+	mkdir -p $SITE_ROOT/data/deploy/${_name1}
+	cd $SITE_ROOT/data/deploy/${_name1}
 	if [ ! -d ".git" ]; then git init; fi
 	_account=$(cat $SITE_ROOT/vars/GIT_${_name}_WRITE)
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
@@ -397,7 +398,7 @@ _repo_init() {
 
 _repo_clear() {
 	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
-		rm -rf $SITE_ROOT/$_r
+		rm -rf $SITE_ROOT/data/deploy/$_r
 		rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
 	done
 	rm $SITE_ROOT/vars/GIT_*
@@ -410,13 +411,6 @@ _run() {
 
 _update() {
 	echo "Update"
-
-	if [ ! -f "$SITE_ROOT/.env" ]; then
-		cat <<EOF >$SITE_ROOT/.env
-export GIT_PUBLIC_URL="https://github.com"
-export MBR_ENV=$MBR_ENV
-EOF
-	fi
 
 	_repo_create_default
 
