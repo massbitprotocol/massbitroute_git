@@ -5,6 +5,22 @@ mkdir -p $SITE_ROOT
 
 export HOME=$SITE_ROOT
 export GIT_PUBLIC_URL="https://github.com"
+
+source $SITE_ROOT/scripts/base.sh
+
+cd $SITE_ROOT
+
+git="git -C $SITE_ROOT"
+diff="diff -s"
+type="git"
+cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
+nginx="$cmd nginx"
+
+mbr_root=/massbit/massbitroute/app
+service_dir=$mbr_root/src/sites/services
+ROOT_DIR=$SITE_ROOT
+VARS=$ROOT_DIR/vars
+
 _repo() {
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
@@ -32,21 +48,6 @@ _repo() {
 _repo
 # if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 # if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-
-source $SITE_ROOT/scripts/base.sh
-
-cd $SITE_ROOT
-
-git="git -C $SITE_ROOT"
-diff="diff -s"
-type="git"
-cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
-nginx="$cmd nginx"
-
-mbr_root=/massbit/massbitroute/app
-service_dir=$mbr_root/src/sites/services
-ROOT_DIR=$SITE_ROOT
-VARS=$ROOT_DIR/vars
 
 # $SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
 # /etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
