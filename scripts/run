@@ -21,12 +21,6 @@ service_dir=$mbr_root/src/sites/services
 ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
 
-if [ -n "$DOMAIN" ]; then
-	GIT_PRIVATE_DOMAIN=git.$DOMAIN
-else
-	echo "$DOMAIN not define"
-	exit 1
-fi
 _repo() {
 	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
@@ -50,6 +44,12 @@ _repo() {
   $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
+	if [ -n "$DOMAIN" ]; then
+		GIT_PRIVATE_DOMAIN=git.$DOMAIN
+	else
+		echo "$DOMAIN not define"
+		exit 1
+	fi
 }
 _repo
 # if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
