@@ -78,10 +78,10 @@ _init() {
 	# 	exit 1
 	# fi
 	# if [ ! -f "$SITE_ROOT/.env" ]; then
-	cat <<EOF >$SITE_ROOT/.env
-export GIT_PUBLIC_URL="https://github.com"
-export MBR_ENV=$MBR_ENV
-EOF
+	# 	cat <<EOF >$SITE_ROOT/.env
+	# export GIT_PUBLIC_URL="https://github.com"
+	# export MBR_ENV=$MBR_ENV
+	# EOF
 	# fi
 
 	source $SITE_ROOT/.env
