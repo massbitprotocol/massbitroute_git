@@ -394,9 +394,9 @@ _repo_init() {
 	else
 		GIT_PRIVATE_READ=$(cat $VARS/GIT_PRIVATE_READ)
 	fi
-	if [ ! -f "$VARS/GIT_PRIVATE_READ_URL" ]; then
-		echo "http://$GIT_PRIVATE_READ@$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_READ_URL
-	fi
+	# if [ ! -f "$VARS/GIT_PRIVATE_READ_URL" ]; then
+	echo "http://$GIT_PRIVATE_READ@$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_READ_URL
+	# fi
 
 	_vars_to_env
 	_repo_create_default
