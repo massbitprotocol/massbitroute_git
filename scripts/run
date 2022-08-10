@@ -193,7 +193,7 @@ _service_fcgiwrap() {
 	while true; do
 		pgrep -f /usr/sbin/fcgiwrap
 		if [ $? -eq 0 ]; then
-			/etc/init.d/fcgiwrap
+			/etc/init.d/fcgiwrap start
 		fi
 		sleep 3
 	done
