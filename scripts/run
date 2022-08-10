@@ -71,7 +71,7 @@ _reload() {
 _prepare() {
 	echo "Prepare"
 	mkdir -p $SITE_ROOT/logs/nginx $SITE_ROOT/db $SITE_ROOT/tmp $SITE_ROOT/db $SITE_ROOT/vars
-	echo mbr-git >$SITE_ROOT/vars/TYPE
+	# echo mbr-git >$SITE_ROOT/vars/TYPE
 	# rm -rf $SITE_ROOT/tmp/*
 
 }
