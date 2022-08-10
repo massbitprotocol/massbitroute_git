@@ -382,6 +382,9 @@ _repo_init() {
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
 	GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
+	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
+		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	fi
 	# fi
 
 	# if [ ! -f "$VARS/GIT_PRIVATE_IP" ]; then
