@@ -192,7 +192,7 @@ _add_host() {
 _service_fcgiwrap() {
 	while true; do
 		pgrep -f /usr/sbin/fcgiwrap
-		if [ $? -eq 0 ]; then
+		if [ $? -ne 0 ]; then
 			/etc/init.d/fcgiwrap start
 		fi
 		sleep 3
