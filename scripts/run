@@ -167,7 +167,7 @@ _vars_to_env() {
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 	echo "Git enviroment"
 	cat $SITE_ROOT/env/git.env
-	cat $SITE_ROOT/env/*.env >$SITE_ROOT/env/env_raw
+	cat $SITE_ROOT/env/*.env >$SITE_ROOT/env/env.sh
 	awk -F'=' -v q1="'" -v q2='"' 'BEGIN{cfg="return {\n"}
 		{
 		        sub(/^export\s*/,"",$1);
@@ -184,7 +184,7 @@ _vars_to_env() {
 		}
 
 		}
-		END{print cfg"}"}' $ROOT_DIR/env/env_raw >$ROOT_DIR/env/env.lua
+		END{print cfg"}"}' $ROOT_DIR/env/env.sh >$ROOT_DIR/env/env.lua
 }
 
 _repo_add() {
