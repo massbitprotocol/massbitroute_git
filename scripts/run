@@ -189,6 +189,16 @@ _add_host() {
 	fi
 }
 
+_service_fcgiwrap() {
+	while true; do
+		pgrep -f /usr/sbin/fcgiwrap
+		if [ $? -eq 0 ]; then
+			/etc/init.d/fcgiwrap
+		fi
+		sleep 3
+	done
+
+}
 _repo_gwmandeploy() {
 	_dir=$1
 
