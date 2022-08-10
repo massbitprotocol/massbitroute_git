@@ -165,6 +165,8 @@ _repo_add_file() {
 _vars_to_env() {
 	cd $SITE_ROOT
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
+	echo "Git enviroment"
+	cat $SITE_ROOT/env/git.env
 }
 _repo_add() {
 	_repo=$1
@@ -358,7 +360,9 @@ _update_repo_branch() {
 }
 _repo_create_default() {
 	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy nodedeploy gatewaydeploy; do
+		echo _repo_add $_r
 		_repo_add $_r
+		echo _update_repo_branch $_r
 		_update_repo_branch $_r
 	done
 }
@@ -396,6 +400,8 @@ _repo_init() {
 		echo "http://$GIT_PRIVATE_READ@$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_READ_URL
 	fi
 
+	echo "GIT_PRIVATE_DOMAIN:$GIT_PRIVATE_DOMAIN"
+	echo "GIT_PRIVATE_READ:$GIT_PRIVATE_READ"
 	_vars_to_env
 	_repo_create_default
 
