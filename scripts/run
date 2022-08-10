@@ -166,7 +166,7 @@ _vars_to_env() {
 	cd $SITE_ROOT
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 	echo "Git enviroment"
-	cat $SITE_ROOT/env/git.env
+	# cat $SITE_ROOT/env/git.env
 	cat $SITE_ROOT/env/*.env >$SITE_ROOT/env/env.sh
 	awk -F'=' -v q1="'" -v q2='"' 'BEGIN{cfg="return {\n"}
 		{
