@@ -179,7 +179,7 @@ _repo_add() {
 		htpasswd -b "$ROOT_DIR/data/${_repo}.htpasswd" $(cat $VARS/GIT_PRIVATE_READ | sed 's/:/ /g')
 		echo "${_repo}:${_pass}" >$VARS/$_repo_case
 	fi
-	# _vars_to_env
+	_vars_to_env
 
 }
 _add_host() {
