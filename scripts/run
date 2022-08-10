@@ -403,9 +403,12 @@ _repo_init() {
 
 _repo_clear() {
 	for _r in env ssl gwmandeploy apideploy mkagentdeploy; do
+		echo rm -rf $SITE_ROOT/$_r
 		rm -rf $SITE_ROOT/$_r
+		echo rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
 		rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
 	done
+	echo rm $SITE_ROOT/vars/GIT_*
 	rm $SITE_ROOT/vars/GIT_*
 }
 
