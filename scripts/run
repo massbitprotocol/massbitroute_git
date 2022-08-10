@@ -2,16 +2,31 @@
 TYPE="git"
 SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
 mkdir -p $SITE_ROOT
-
 export HOME=$SITE_ROOT
+ROOT_DIR=$SITE_ROOT
+source $SITE_ROOT/scripts/base.sh
+
+cd $SITE_ROOT
+
+git="git -C $SITE_ROOT"
+diff="diff -s"
+type="git"
+cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
+nginx="$cmd nginx"
+
+mbr_root=/massbit/massbitroute/app
+service_dir=$mbr_root/src/sites/services
+ROOT_DIR=$SITE_ROOT
+VARS=$ROOT_DIR/vars
 # $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
 # $mbr_root/gbc|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
-_repo() {
+_init() {
+
 	if [ -z "$MBR_ENV" ]; then
 		echo "MBR_ENV missing"
 		exit 1
 	fi
-
+	_git_config
 	# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 	# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
 	# export MBR_ENV=${MBR_ENV:-keiko}
@@ -33,24 +48,9 @@ _repo() {
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
 }
-_repo
+# _repo
 # if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
 # if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-
-source $SITE_ROOT/scripts/base.sh
-
-cd $SITE_ROOT
-
-git="git -C $SITE_ROOT"
-diff="diff -s"
-type="git"
-cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
-nginx="$cmd nginx"
-
-mbr_root=/massbit/massbitroute/app
-service_dir=$mbr_root/src/sites/services
-ROOT_DIR=$SITE_ROOT
-VARS=$ROOT_DIR/vars
 
 # $SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
 # /etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
@@ -75,24 +75,24 @@ _prepare() {
 	# rm -rf $SITE_ROOT/tmp/*
 
 }
-_init() {
-	# if [ -z "$GIT_PRIVATE_READ_URL" ]; then
-	# 	echo "Need GIT_PRIVATE_READ_URL"
-	# 	exit 1
-	# fi
-	if [ ! -f "$SITE_ROOT/.env" ]; then
-		echo "$MBR_ENV" >$SITE_ROOT/.env
-	fi
+# _init() {
+# if [ -z "$GIT_PRIVATE_READ_URL" ]; then
+# 	echo "Need GIT_PRIVATE_READ_URL"
+# 	exit 1
+# fi
+# if [ ! -f "$SITE_ROOT/.env" ]; then
+# 	echo "$MBR_ENV" >$SITE_ROOT/.env
+# fi
 
-	source $SITE_ROOT/.env
+# source $SITE_ROOT/.env
 
-	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git /massbit/massbitroute/app/src/env $MBR_ENV
-	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
+# _git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git /massbit/massbitroute/app/src/env $MBR_ENV
+# _git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
 
-	bash $SITE_ROOT/cmd_server _env
-	source $SITE_ROOT/.env_raw
-	_repo
-}
+# bash $SITE_ROOT/cmd_server _env
+# source $SITE_ROOT/.env_raw
+# 	_repo
+# }
 
 _supervisor() {
 	ln -sf /massbit/massbitroute/app/gbc /massbit/massbitroute/app/src/gbc
@@ -112,8 +112,7 @@ _supervisor() {
 }
 
 _install_repos() {
-	_git_config
-	_repo
+	_init
 	for _pathgit in $REPOS; do
 		_path=$(echo $_pathgit | cut -d'|' -f1)
 		_url=$(echo $_pathgit | cut -d'|' -f2)
@@ -122,8 +121,6 @@ _install_repos() {
 	done
 }
 _install_one() {
-	_repo
-	_init
 	_prepare
 	_install_repos
 }
@@ -141,8 +138,7 @@ loop() {
 }
 
 _update_repos() {
-	_git_config
-	_repo
+	_init
 	_update_sources $REPOS
 	_st_repo=$?
 	return $_st_repo
@@ -425,7 +421,6 @@ _update() {
 }
 
 _monitor() {
-
 	_update
 
 	is_reload=$?
