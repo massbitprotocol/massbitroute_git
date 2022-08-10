@@ -122,7 +122,7 @@ _install_repos() {
 }
 _install_one() {
 	_prepare
-	_install_repos
+	# _install_repos
 }
 
 _install() {
@@ -413,7 +413,7 @@ _update() {
 	echo "Update"
 	_repo_create_default
 
-	_update_repos
+	# _update_repos
 	_st_update=$?
 
 	return $_st_update
