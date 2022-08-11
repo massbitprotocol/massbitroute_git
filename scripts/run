@@ -395,7 +395,7 @@ _repo_init() {
 	fi
 
 	echo "export DOMAIN=$DOMAIN" >$SITE_ROOT/env/base.env
-	echo "export API_DOMAIN_SSL=#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
+	echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
