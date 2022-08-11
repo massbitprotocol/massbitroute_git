@@ -164,6 +164,7 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
+	ls vars | grep ^BASE_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/base.env
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/api.env
 	echo "Git enviroment"
@@ -401,13 +402,21 @@ _repo_init() {
 	# if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
+	# if [ -n "$DOMAIN" ]; then
+	echo "$DOMAIN" >$VARS/BASE_DOMAIN
+
+	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
+		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
+		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	fi
+	# fi
+
 	echo "allow 127.0.0.1;deny all;" >$VARS/API_INTERNAL_IP_ALLOW
 	echo "https://github.com" >$VARS/GIT_PUBLIC_URL
 
-	GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
-	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
-		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
-	fi
+	# if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
+	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	# fi
 	# fi
 
 	# if [ ! -f "$VARS/GIT_PRIVATE_IP" ]; then
@@ -426,8 +435,8 @@ _repo_init() {
 		echo "http://$GIT_PRIVATE_READ@$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_READ_URL
 	fi
 
-	echo "GIT_PRIVATE_DOMAIN:$GIT_PRIVATE_DOMAIN"
-	echo "GIT_PRIVATE_READ:$GIT_PRIVATE_READ"
+	# echo "GIT_PRIVATE_DOMAIN:$GIT_PRIVATE_DOMAIN"
+	# echo "GIT_PRIVATE_READ:$GIT_PRIVATE_READ"
 	_vars_to_env
 	_repo_create_default
 
