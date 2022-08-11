@@ -164,7 +164,6 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
-	ls vars | grep ^BASE_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/base.env
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/api.env
 	echo "Git enviroment"
@@ -403,7 +402,7 @@ _repo_init() {
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
 	# if [ -n "$DOMAIN" ]; then
-	echo "$DOMAIN" >$VARS/BASE_DOMAIN
+	echo "export DOMAIN=\'$DOMAIN\'" >$SITE_ROOT/env/base.env
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
