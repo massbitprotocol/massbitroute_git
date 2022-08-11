@@ -400,6 +400,8 @@ _repo_init() {
 	# if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
+	echo "https://github.com" >$VARS/GIT_PUBLIC_URL
+
 	GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
