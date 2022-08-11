@@ -400,6 +400,7 @@ _repo_init() {
 	# if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
+	echo "allow 127.0.0.1;deny all;" >$VARS/INTERNAL_API_ALLOW
 	echo "https://github.com" >$VARS/GIT_PUBLIC_URL
 
 	GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
