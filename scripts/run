@@ -402,7 +402,7 @@ _repo_init() {
 	# 	echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
 	# else
 	# if [ -n "$DOMAIN" ]; then
-	echo "export DOMAIN=\'$DOMAIN\'" >$SITE_ROOT/env/base.env
+	echo "export DOMAIN='$DOMAIN'" >$SITE_ROOT/env/base.env
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
