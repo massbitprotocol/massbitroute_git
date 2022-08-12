@@ -10,9 +10,6 @@ cd $SITE_ROOT
 
 git="git -C $SITE_ROOT"
 diff="diff -s"
-type="git"
-cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
-nginx="$cmd nginx"
 
 mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
@@ -40,8 +37,11 @@ _docker_up() {
 	docker-compose -f install/mbr/docker-compose.yml up $@
 }
 _reload() {
-	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
-	$cmd _update
+	pkill -f push.py
+	$SITE_ROOT/cmd_server _update
+	$SITE_ROOT/cmd_server update
+	$SITE_ROOT/cmd_server start all
+
 	#	$cmd update
 }
 _prepare() {
@@ -301,7 +301,13 @@ _repo_init() {
 	fi
 
 	echo "export DOMAIN=$DOMAIN" >$SITE_ROOT/env/base.env
-	echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
+	if [ ! -f "$VARS/API_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
+	fi
+
+	if [ ! -f "$VARS/STAT_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/stat.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/stat.mbr.$DOMAIN/privkey.pem;" >$VARS/STAT_DOMAIN_SSL
+	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
 		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
