@@ -2,105 +2,53 @@
 TYPE="git"
 SITE_ROOT=$(realpath $(dirname $(realpath $0))/..)
 mkdir -p $SITE_ROOT
-
 export HOME=$SITE_ROOT
-export GIT_PUBLIC_URL="https://github.com"
 
+ROOT_DIR=$SITE_ROOT
 source $SITE_ROOT/scripts/base.sh
 
 cd $SITE_ROOT
 
 git="git -C $SITE_ROOT"
 diff="diff -s"
-type="git"
-cmd="/massbit/massbitroute/app/src/sites/services/$type/cmd_server"
-nginx="$cmd nginx"
 
 mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
 ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
+env_dir=$SITE_ROOT/data/env
+_init() {
 
-_repo() {
-	if [ ! -f "$SITE_ROOT/.env" ]; then
-		cat <<EOF >$SITE_ROOT/.env
-export GIT_PUBLIC_URL="https://github.com"
-export MBR_ENV=$MBR_ENV
-EOF
-	fi
-
-	if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
-	if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-	export MBR_ENV=${MBR_ENV:-dev}
-	export MBRAPP_BRANCH=${MBRAPP_BRANCH:-$MBR_ENV}
-	export ASDF_BRANCH=${ASDF_BRANCH:-$MBR_ENV}
-	export GBC_BRANCH=${GBC_BRANCH:-$MBR_ENV}
-	export SSL_BRANCH=${SSL_BRANCH:-$MBR_ENV}
-	export GWMAN_BRANCH=${GWMAN_BRANCH:-$MBR_ENV}
-	export NODE_BRANCH=${NODE_BRANCH:-$MBR_ENV}
-	export GATEWAY_BRANCH=${GATEWAY_BRANCH:-$MBR_ENV}
-	export STAT_BRANCH=${STAT_BRANCH:-$MBR_ENV}
-	export MONITOR_BRANCH=${MONITOR_BRANCH:-$MBR_ENV}
-	export MONITORDEPLOY_BRANCH=${MONITORDEPLOY_BRANCH:-$MBR_ENV}
-	export API_BRANCH=${API_BRANCH:-$MBR_ENV}
-	export SESSION_BRANCH=${SESSION_BRANCH:-$MBR_ENV}
-	export GIT_BRANCH=${GIT_BRANCH:-$MBR_ENV}
-	export MKAGENT_BRANCH=${MKAGENT_BRANCH:-$MBR_ENV}
-	REPOS="\
- $mbr_root/gbc|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
-  $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
-  $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
-"
-	if [ -n "$DOMAIN" ]; then
-		export GIT_PRIVATE_DOMAIN=git.$DOMAIN
-		echo $GIT_PRIVATE_DOMAIN >$VARS/GIT_PRIVATE_DOMAIN
-		# grep "127.0.0.1 $GIT_PRIVATE_DOMAIN" /etc/hosts >/dev/null
-		# if [ $? -ne 0 ]; then
-		# 	sed "/$GIT_PRIVATE_DOMAIN/d" -i /etc/hosts
-		# 	echo 127.0.0.1 $GIT_PRIVATE_DOMAIN >>/etc/hosts
-		# fi
-	else
-		echo "$DOMAIN not define"
+	if [ -z "$MBR_ENV" ]; then
+		echo "MBR_ENV missing"
 		exit 1
 	fi
+	_git_config
+
+	export MKAGENT_BRANCH=${MKAGENT_BRANCH:-$MBR_ENV}
+	REPOS="\
+  $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
+"
 }
-_repo
+
+_docker_build() {
+	docker-compose -f install/mbr/docker-compose.yml build $@
+}
+_docker_up() {
+	docker-compose -f install/mbr/docker-compose.yml up $@
+}
 
 _reload() {
-	$SITE_ROOT/etc/mkagent/agents/push.sh _kill
-	$cmd _update
+	pkill -f push.py
+	$SITE_ROOT/cmd_server _update
+	$SITE_ROOT/cmd_server update
+	$SITE_ROOT/cmd_server start all
+
 	#	$cmd update
 }
 _prepare() {
 	echo "Prepare"
 	mkdir -p $SITE_ROOT/logs/nginx $SITE_ROOT/db $SITE_ROOT/tmp $SITE_ROOT/db $SITE_ROOT/vars
-	echo mbr-git >$SITE_ROOT/vars/TYPE
-	# rm -rf $SITE_ROOT/tmp/*
-
-}
-_init() {
-	# if [ -z "$GIT_PRIVATE_READ_URL" ]; then
-	# 	echo "Need GIT_PRIVATE_READ_URL"
-	# 	exit 1
-	# fi
-	# if [ ! -f "$SITE_ROOT/.env" ]; then
-	# 	cat <<EOF >$SITE_ROOT/.env
-	# export GIT_PUBLIC_URL="https://github.com"
-	# export MBR_ENV=$MBR_ENV
-	# EOF
-	# fi
-
-	# source $SITE_ROOT/.env
-
-	_repo
-	_git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git $SITE_ROOT/data/deploy/env $MBR_ENV
-	_git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
-	# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
-	# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-
-	_repo
-	# bash $SITE_ROOT/cmd_server _env
-	# source $SITE_ROOT/.env_raw
 
 }
 
@@ -122,9 +70,9 @@ _supervisor() {
 }
 
 _install_repos() {
-	_git_config
 
-	echo $REPOS
+	_init
+
 	for _pathgit in $REPOS; do
 		_repo
 		_path=$(echo $_pathgit | cut -d'|' -f1)
@@ -134,10 +82,8 @@ _install_repos() {
 	done
 }
 _install_one() {
-	_repo
-	_init
 	_prepare
-	_install_repos
+	# _install_repos
 }
 
 _install() {
@@ -153,8 +99,7 @@ loop() {
 }
 
 _update_repos() {
-	_git_config
-	_repo
+	_init
 	_update_sources $REPOS
 	_st_repo=$?
 	return $_st_repo
@@ -180,8 +125,37 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
-	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/data/deploy/env/git.env
+
+
+	ls vars | grep ^MONITOR_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/monitor.env
+	ls vars | grep ^NODE_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/node.env
+	ls vars | grep ^GATEWAY_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/gateway.env
+	ls vars | grep ^STAT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/stat.env
+	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/git.env
+	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env/api.env
+	echo "Git enviroment"
+	# cat $SITE_ROOT/env/git.env
+	cat $env_dir/*.env >$env_dir/env.sh
+	awk -F'=' -v q1="'" -v q2='"' 'BEGIN{cfg="return {\n"}
+		{
+		        sub(/^export\s*/,"",$1);
+	        gsub(/ /,"",$1);
+
+	        if(length($2) == 0)
+		        cfg=cfg"[\""$1"\"]""=\""$2"\",\n";
+		else {
+		        val_1=substr($2,0,1);
+		        if(val_1 == q1 || val_1 == q2)
+		        cfg=cfg"[\""$1"\"]""="$2",\n";
+		        else
+		        cfg=cfg"[\""$1"\"]""=\""$2"\",\n";
+		}
+
+		}
+		END{print cfg"}"}' $env_dir/env.sh >$env_dir/env.lua
+
 }
+
 _repo_add() {
 	_repo=$1
 	_repo_add_file $_repo
@@ -205,6 +179,16 @@ _add_host() {
 	fi
 }
 
+_service_fcgiwrap() {
+	while true; do
+		pgrep -f /usr/sbin/fcgiwrap
+		if [ $? -ne 0 ]; then
+			/etc/init.d/fcgiwrap start
+		fi
+		sleep 3
+	done
+
+}
 _repo_gwmandeploy() {
 	_dir=$1
 
@@ -285,73 +269,25 @@ EOF
   }
 EOF
 	fi
-	# if [ ! -f "zones/${DOMAIN}" ]; then
-	#
-	#	sed "s/_DOMAIN_/${DOMAIN}/g" $_dir/etc/zone.tpl >$_dir/data/zones/${DOMAIN} # fi	# fi
-
-	# 	if [ ! -f "$_dir/zones/${DOMAIN}" ]; then
-	# 		cp $_dir/data/zones/${DOMAIN} $_dir/zones/${DOMAIN}
-	# 	fi
-	# 	if [ ! -f "$_dir/config" ]; then
-	# 		cat $_dir/config <<EOF
-	# options => {
-	#     run_dir = $SITE_ROOT/run
-	#     state_dir = $SITE_ROOT/run
-	#     tcp_threads => 1
-	#     udp_threads => 1
-	#     edns_client_subnet => true
-	#     zones_default_ttl => 3600
-	#     listen => [127.0.0.1]
-	#     dns_port = 5300
-	# }
-
-	# service_types => {
-	#     $include{data/conf.d/monitors.d/*}
-	# }
-
-	# plugins => {
-	#     simplefo => {
-	#         $include{data/conf.d/failover.d/*}
-	#     }
-	#     weighted => {
-	#             $include{data/conf.d/weighted.d/*}
-	#     }
-	#     multifo => {
-	#             $include{data/conf.d/multivalue.d/*}
-	#     }
-
-	#     metafo => {
-	#         resources => {
-	#             $include{data/conf.d/datacenter.d/*}
-	#         }
-	#     }
-	#     geoip =>  {
-	#             maps => {
-	#                 $include{data/conf.d/geolocation.d/maps.d/*}
-	#             }
-	#             resources => {
-	#                 $include{data/conf.d/geolocation.d/resources.d/*}
-	#             }
-	#     }
-	# }
-	# EOF
-	# 	fi
 	cd $SITE_ROOT
 }
 
 _update_repo_branch() {
 	_name1=$1
 
-	mkdir -p $SITE_ROOT/data/deploy
+	_dir=$SITE_ROOT/data/${_name1}
 	case $_name1 in
 	gwmandeploy)
-		_repo_gwmandeploy $SITE_ROOT/data/deploy/${_name1}
+		_repo_gwmandeploy $_dir
+
 		;;
 	esac
-
 	_name=${_name1^^}
-	mkdir -p $SITE_ROOT/data/deploy/${_name1}
-	cd $SITE_ROOT/data/deploy/${_name1}
+
+	mkdir -p $_dir
+	cd $_dir
+
+
 	if [ ! -d ".git" ]; then git init; fi
 	_account=$(cat $SITE_ROOT/vars/GIT_${_name}_WRITE)
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
@@ -365,27 +301,51 @@ _update_repo_branch() {
 }
 _repo_create_default() {
 	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy nodedeploy gatewaydeploy; do
+		echo _repo_add $_r
 		_repo_add $_r
+		echo _update_repo_branch $_r
 		_update_repo_branch $_r
 	done
 }
 _repo_init() {
 	_git_config
-	mkdir -p $ROOT_DIR/data
-	# ip=$(curl http://ipv4.canhazip.com)
-	# GIT_PRIVATE_DOMAIN=git.$DOMAIN
-	_add_host $GIT_PRIVATE_DOMAIN 127.0.0.1
 
-	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
-		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
-	else
-		GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
+	mkdir -p $env_dir
+
+	if [ -z "$DOMAIN" ]; then
+		echo "environment DOMAIN missing"
+		exit 1
 	fi
 
-	if [ ! -f "$VARS/GIT_PRIVATE_IP" ]; then
-		echo "$ip" >$VARS/GIT_PRIVATE_IP
-	else
-		GIT_PRIVATE_IP=$(cat $VARS/GIT_PRIVATE_IP)
+	echo "export DOMAIN=$DOMAIN" >$env_dir/base.env
+
+	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/node.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/node.mbr.$DOMAIN/privkey.pem;" >$VARS/NODE_DOMAIN_SSL
+	fi
+	if [ ! -f "$VARS/GATEWAY_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/gw.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/gw.mbr.$DOMAIN/privkey.pem;" >$VARS/GATEWAY_DOMAIN_SSL
+	fi
+
+	if [ ! -f "$VARS/API_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
+	fi
+
+	if [ ! -f "$VARS/STAT_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/stat.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/stat.mbr.$DOMAIN/privkey.pem;" >$VARS/STAT_DOMAIN_SSL
+	fi
+
+
+	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
+		export GIT_PRIVATE_DOMAIN=${GIT_PRIVATE_DOMAIN:-git.$DOMAIN}
+		echo "$GIT_PRIVATE_DOMAIN" >$VARS/GIT_PRIVATE_DOMAIN
+	fi
+
+	if [ ! -f "$VARS/API_INTERNAL_IP_ALLOW" ]; then
+		echo "allow 127.0.0.1;deny all;" >$VARS/API_INTERNAL_IP_ALLOW
+	fi
+
+	if [ ! -f "$VARS/GIT_PUBLIC_URL" ]; then
+		echo "https://github.com" >$VARS/GIT_PUBLIC_URL
 	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_READ" ]; then
@@ -404,16 +364,16 @@ _repo_init() {
 }
 
 _repo_clear() {
-	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy; do
-		rm -rf $SITE_ROOT/data/deploy/$_r
+
+	for _r in env ssl gwmandeploy apideploy mkagentdeploy; do
+		echo rm -rf $SITE_ROOT/$_r
+		rm -rf $SITE_ROOT/$_r
+		echo rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
+
 		rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
 	done
+	echo rm $SITE_ROOT/vars/GIT_*
 	rm $SITE_ROOT/vars/GIT_*
-}
-
-_run() {
-	rm -rf $SITE_ROOT/tmp/*
-	$SITE_ROOT/start_server
 }
 
 _update() {
@@ -422,7 +382,7 @@ _update() {
 
 	# _repo_create_default
 
-	_update_repos
+	# _update_repos
 	_st_update=$?
 
 	return $_st_update
@@ -430,7 +390,7 @@ _update() {
 }
 
 _monitor() {
-	/etc/init.d/fcgiwrap start
+
 	_update
 
 	is_reload=$?
@@ -441,4 +401,9 @@ _monitor() {
 
 }
 
+_run() {
+	rm -rf $SITE_ROOT/tmp/*
+	_update
+	$SITE_ROOT/start_server
+}
 $@
