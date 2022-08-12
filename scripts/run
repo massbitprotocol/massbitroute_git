@@ -121,6 +121,9 @@ _repo_add_file() {
 _vars_to_env() {
 	cd $SITE_ROOT
 
+	ls vars | grep ^MONITOR_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/monitor.env
+	ls vars | grep ^NODE_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/node.env
+	ls vars | grep ^GATEWAY_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/gateway.env
 	ls vars | grep ^STAT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/stat.env
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/git.env
 	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env/api.env
@@ -304,6 +307,14 @@ _repo_init() {
 	fi
 
 	echo "export DOMAIN=$DOMAIN" >$env_dir/base.env
+
+	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/node.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/node.mbr.$DOMAIN/privkey.pem;" >$VARS/NODE_DOMAIN_SSL
+	fi
+	if [ ! -f "$VARS/GATEWAY_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/gw.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/gw.mbr.$DOMAIN/privkey.pem;" >$VARS/GATEWAY_DOMAIN_SSL
+	fi
+
 	if [ ! -f "$VARS/API_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
 	fi
