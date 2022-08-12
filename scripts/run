@@ -300,7 +300,8 @@ _repo_create_default() {
 _repo_init() {
 	_git_config
 	mkdir -p $env_dir
-
+	cd $SITE_ROOT
+	ln -sf $env_dir src
 	if [ -z "$DOMAIN" ]; then
 		echo "environment DOMAIN missing"
 		exit 1
