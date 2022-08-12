@@ -18,8 +18,7 @@ mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
 ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
-# $service_dir/git|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_git.git|$GIT_BRANCH \
-# $mbr_root/gbc|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc|$GBC_BRANCH \
+
 _init() {
 
 	if [ -z "$MBR_ENV" ]; then
@@ -27,35 +26,12 @@ _init() {
 		exit 1
 	fi
 	_git_config
-	# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
-	# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-	# export MBR_ENV=${MBR_ENV:-keiko}
-	# export MBRAPP_BRANCH=${MBRAPP_BRANCH:-$MBR_ENV}
-	# export ASDF_BRANCH=${ASDF_BRANCH:-$MBR_ENV}
-	# export GBC_BRANCH=${GBC_BRANCH:-$MBR_DEV}
-	# export SSL_BRANCH=${SSL_BRANCH:-$MBR_ENV}
-	# export GWMAN_BRANCH=${GWMAN_BRANCH:-$MBR_ENV}
-	# export NODE_BRANCH=${NODE_BRANCH:-$MBR_ENV}
-	# export GATEWAY_BRANCH=${GATEWAY_BRANCH:-$MBR_ENV}
-	# export STAT_BRANCH=${STAT_BRANCH:-$MBR_ENV}
-	# export MONITOR_BRANCH=${MONITOR_BRANCH:-$MBR_ENV}
-	# export MONITORDEPLOY_BRANCH=${MONITORDEPLOY_BRANCH:-$MBR_ENV}
-	# export API_BRANCH=${API_BRANCH:-$MBR_ENV}
-	# export SESSION_BRANCH=${SESSION_BRANCH:-$MBR_ENV}
-	# export GIT_BRANCH=${GIT_BRANCH:-$MBR_DEV}
+
 	export MKAGENT_BRANCH=${MKAGENT_BRANCH:-$MBR_ENV}
 	REPOS="\
   $service_dir/mkagent|$GIT_PUBLIC_URL/massbitprotocol/massbitroute_mkagent.git|$MKAGENT_BRANCH \
 "
 }
-# _repo
-# if [ -e "$SITE_ROOT/cmd_server" ]; then bash $SITE_ROOT/cmd_server _env; fi
-# if [ -f "$SITE_ROOT/.env_raw" ]; then source $SITE_ROOT/.env_raw; fi
-
-# $SITE_ROOT/env|$GIT_PRIVATE_READ_URL/massbitroute/env.git|$MBR_ENV \
-# /etc/letsencrypt|$GIT_PRIVATE_READ_URL/massbitroute/ssl.git|$SSL_BRANCH \
-
-# _repo
 
 _docker_build() {
 	docker-compose -f install/mbr/docker-compose.yml build $@
@@ -71,28 +47,8 @@ _reload() {
 _prepare() {
 	echo "Prepare"
 	mkdir -p $SITE_ROOT/logs/nginx $SITE_ROOT/db $SITE_ROOT/tmp $SITE_ROOT/db $SITE_ROOT/vars
-	# echo mbr-git >$SITE_ROOT/vars/TYPE
-	# rm -rf $SITE_ROOT/tmp/*
 
 }
-# _init() {
-# if [ -z "$GIT_PRIVATE_READ_URL" ]; then
-# 	echo "Need GIT_PRIVATE_READ_URL"
-# 	exit 1
-# fi
-# if [ ! -f "$SITE_ROOT/.env" ]; then
-# 	echo "$MBR_ENV" >$SITE_ROOT/.env
-# fi
-
-# source $SITE_ROOT/.env
-
-# _git_clone $GIT_PRIVATE_READ_URL/massbitroute/env.git /massbit/massbitroute/app/src/env $MBR_ENV
-# _git_clone $GIT_PUBLIC_URL/massbitprotocol/massbitroute_gbc.git /massbit/massbitroute/app/gbc
-
-# bash $SITE_ROOT/cmd_server _env
-# source $SITE_ROOT/.env_raw
-# 	_repo
-# }
 
 _supervisor() {
 	ln -sf /massbit/massbitroute/app/gbc /massbit/massbitroute/app/src/gbc
@@ -301,57 +257,6 @@ EOF
   }
 EOF
 	fi
-	# if [ ! -f "zones/${DOMAIN}" ]; then
-	#
-	#	sed "s/_DOMAIN_/${DOMAIN}/g" $_dir/etc/zone.tpl >$_dir/data/zones/${DOMAIN} # fi	# fi
-
-	# 	if [ ! -f "$_dir/zones/${DOMAIN}" ]; then
-	# 		cp $_dir/data/zones/${DOMAIN} $_dir/zones/${DOMAIN}
-	# 	fi
-	# 	if [ ! -f "$_dir/config" ]; then
-	# 		cat $_dir/config <<EOF
-	# options => {
-	#     run_dir = $SITE_ROOT/run
-	#     state_dir = $SITE_ROOT/run
-	#     tcp_threads => 1
-	#     udp_threads => 1
-	#     edns_client_subnet => true
-	#     zones_default_ttl => 3600
-	#     listen => [127.0.0.1]
-	#     dns_port = 5300
-	# }
-
-	# service_types => {
-	#     $include{data/conf.d/monitors.d/*}
-	# }
-
-	# plugins => {
-	#     simplefo => {
-	#         $include{data/conf.d/failover.d/*}
-	#     }
-	#     weighted => {
-	#             $include{data/conf.d/weighted.d/*}
-	#     }
-	#     multifo => {
-	#             $include{data/conf.d/multivalue.d/*}
-	#     }
-
-	#     metafo => {
-	#         resources => {
-	#             $include{data/conf.d/datacenter.d/*}
-	#         }
-	#     }
-	#     geoip =>  {
-	#             maps => {
-	#                 $include{data/conf.d/geolocation.d/maps.d/*}
-	#             }
-	#             resources => {
-	#                 $include{data/conf.d/geolocation.d/resources.d/*}
-	#             }
-	#     }
-	# }
-	# EOF
-	# 	fi
 	cd $SITE_ROOT
 }
 
