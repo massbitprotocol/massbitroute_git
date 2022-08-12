@@ -15,7 +15,7 @@ mbr_root=/massbit/massbitroute/app
 service_dir=$mbr_root/src/sites/services
 ROOT_DIR=$SITE_ROOT
 VARS=$ROOT_DIR/vars
-
+env_dir=$SITE_ROOT/data/env
 _init() {
 
 	if [ -z "$MBR_ENV" ]; then
@@ -120,12 +120,13 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
-	ls vars | grep ^STAT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/stat.env
-	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
-	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/api.env
+
+	ls vars | grep ^STAT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/stat.env
+	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/git.env
+	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env/api.env
 	echo "Git enviroment"
 	# cat $SITE_ROOT/env/git.env
-	cat $SITE_ROOT/env/*.env >$SITE_ROOT/env/env.sh
+	cat $env_dir/*.env >$env_dir/env.sh
 	awk -F'=' -v q1="'" -v q2='"' 'BEGIN{cfg="return {\n"}
 		{
 		        sub(/^export\s*/,"",$1);
@@ -142,7 +143,7 @@ _vars_to_env() {
 		}
 
 		}
-		END{print cfg"}"}' $ROOT_DIR/env/env.sh >$ROOT_DIR/env/env.lua
+		END{print cfg"}"}' $env_dir/env.sh >$env_dir/env.lua
 }
 
 _repo_add() {
@@ -295,13 +296,14 @@ _repo_create_default() {
 }
 _repo_init() {
 	_git_config
-	mkdir -p $ROOT_DIR/data $ROOT_DIR/env
+	mkdir -p $env_dir
+
 	if [ -z "$DOMAIN" ]; then
 		echo "environment DOMAIN missing"
 		exit 1
 	fi
 
-	echo "export DOMAIN=$DOMAIN" >$SITE_ROOT/env/base.env
+	echo "export DOMAIN=$DOMAIN" >$env_dir/base.env
 	if [ ! -f "$VARS/API_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;" >$VARS/API_DOMAIN_SSL
 	fi
