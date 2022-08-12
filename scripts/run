@@ -120,6 +120,7 @@ _repo_add_file() {
 }
 _vars_to_env() {
 	cd $SITE_ROOT
+	ls vars | grep ^STAT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/stat.env
 	ls vars | grep ^GIT_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/git.env
 	ls vars | grep ^API_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$SITE_ROOT/env/api.env
 	echo "Git enviroment"
