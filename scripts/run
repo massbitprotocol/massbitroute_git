@@ -348,11 +348,6 @@ _repo_clear() {
 	rm $SITE_ROOT/vars/GIT_*
 }
 
-_run() {
-	rm -rf $SITE_ROOT/tmp/*
-	$SITE_ROOT/start_server
-}
-
 _update() {
 	echo "Update"
 	_repo_create_default
@@ -375,4 +370,9 @@ _monitor() {
 
 }
 
+_run() {
+	rm -rf $SITE_ROOT/tmp/*
+	_update
+	$SITE_ROOT/start_server
+}
 $@
