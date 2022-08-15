@@ -373,7 +373,7 @@ _repo_clear() {
 	echo rm $SITE_ROOT/vars/GIT_*
 	rm $SITE_ROOT/vars/GIT_*
 }
-nb
+
 _update() {
 	echo "Update"
 	_repo_init
