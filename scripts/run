@@ -318,9 +318,6 @@ _repo_init() {
 
 	echo "export DOMAIN=$DOMAIN" >$env_dir/base.env
 
-	if [ -z "$GIT_AUTH" ]; then GIT_AUTH=""; fi
-	echo "$GIT_AUTH" | sed 's/\"//g' | sed "s/\'//g" >$VARS/GIT_AUTH
-
 	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/node.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/node.mbr.$DOMAIN/privkey.pem;" >$VARS/NODE_DOMAIN_SSL
 	fi
