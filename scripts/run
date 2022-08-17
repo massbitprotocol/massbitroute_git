@@ -298,7 +298,7 @@ _update_repo_branch() {
 	touch Readme.md
 	git add .
 	git commit -m "Add env"
-	git push -u origin $PRIVATE_BRANCH
+	git push -u origin $GIT_PRIVATE_BRANCH
 }
 _repo_create_default() {
 	if [ -z "$GIT_PRIVATE_BRANCH" ]; then
