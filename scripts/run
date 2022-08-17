@@ -273,6 +273,7 @@ EOF
 }
 
 _update_repo_branch() {
+
 	_name1=$1
 
 	_dir=$SITE_ROOT/data/${_name1}
@@ -290,15 +291,22 @@ _update_repo_branch() {
 	if [ ! -d ".git" ]; then git init; fi
 	_account=$(cat $SITE_ROOT/vars/GIT_${_name}_WRITE)
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
+	GIT_PRIVATE_BRANCH=$(cat $VARS/GIT_PRIVATE_BRANCH)
 	git remote add origin http://$_account@$GIT_PRIVATE_DOMAIN/massbitroute/${_name1}.git
-	git checkout -b $MBR_ENV
-	git pull origin $MBR_ENV
+	git checkout -b $GIT_PRIVATE_BRANCH
+	git pull origin $GIT_PRIVATE_BRANCH
 	touch Readme.md
 	git add .
 	git commit -m "Add env"
-	git push -u origin $MBR_ENV
+	git push -u origin $PRIVATE_BRANCH
 }
 _repo_create_default() {
+	if [ -z "$GIT_PRIVATE_BRANCH" ]; then
+		echo "Miss GIT_PRIVATE_BRANCH"
+		exit 1
+	else
+		echo $GIT_PRIVATE_BRANCH >$VARS/GIT_PRIVATE_BRANCH
+	fi
 	for _r in env ssl gwmandeploy apideploy statdeploy monitordeploy nodedeploy gatewaydeploy; do
 		echo _repo_add $_r
 		_repo_add $_r
