@@ -153,7 +153,7 @@ _vars_to_env() {
 		}
 		END{print cfg"}"}' $env_dir/env.sh >$env_dir/env.lua
 	mkdir -p $SITE_ROOT/src
-	cp $env_dir/env.lua $SITE_ROOT/src/
+	cp $env_dir/env.lua $SITE_ROOT/src/env.lua
 }
 
 _repo_add() {
