@@ -191,6 +191,7 @@ _service_fcgiwrap() {
 }
 _repo_gwmandeploy() {
 	_dir=$1
+	mkdir -p $_dir
 	cd $_dir
 	mkdir -p zones
 	touch zones/.gitkeep
