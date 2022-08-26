@@ -191,7 +191,6 @@ _service_fcgiwrap() {
 }
 _repo_gwmandeploy() {
 	_dir=$1
-
 	cd $_dir
 	mkdir -p zones
 	touch zones/.gitkeep
@@ -277,6 +276,7 @@ _update_repo_branch() {
 	_name1=$1
 
 	_dir=$SITE_ROOT/data/${_name1}
+	mkdir -p $_dir
 	case $_name1 in
 	gwmandeploy)
 		_repo_gwmandeploy $_dir
@@ -285,7 +285,6 @@ _update_repo_branch() {
 	esac
 	_name=${_name1^^}
 
-	mkdir -p $_dir
 	cd $_dir
 
 	if [ ! -d ".git" ]; then git init; fi
