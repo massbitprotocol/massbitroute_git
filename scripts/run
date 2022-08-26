@@ -287,7 +287,8 @@ _update_repo_branch() {
 
 	cd $_dir
 
-	if [ ! -d ".git" ]; then git init; fi
+	# if [ ! -d ".git" ]; then git init; fi
+	git init
 	_account=$(cat $SITE_ROOT/vars/GIT_${_name}_WRITE)
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
 	GIT_PRIVATE_BRANCH=$(cat $VARS/GIT_PRIVATE_BRANCH)
