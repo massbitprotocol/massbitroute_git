@@ -276,7 +276,9 @@ _update_repo_branch() {
 	_name1=$1
 
 	_dir=$SITE_ROOT/data/${_name1}
+	cd $_dir
 	mkdir -p $_dir
+	if [ ! -d ".git" ]; then git init; fi
 	case $_name1 in
 	gwmandeploy)
 		_repo_gwmandeploy $_dir
@@ -285,10 +287,7 @@ _update_repo_branch() {
 	esac
 	_name=${_name1^^}
 
-	cd $_dir
-
-	# if [ ! -d ".git" ]; then git init; fi
-	git init
+	#	git init
 	_account=$(cat $SITE_ROOT/vars/GIT_${_name}_WRITE)
 	GIT_PRIVATE_DOMAIN=$(cat $VARS/GIT_PRIVATE_DOMAIN)
 	GIT_PRIVATE_BRANCH=$(cat $VARS/GIT_PRIVATE_BRANCH)
