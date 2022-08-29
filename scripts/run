@@ -196,9 +196,9 @@ _repo_gwmandeploy() {
 	mkdir -p zones
 	touch zones/.gitkeep
 	for _d in monitors.d failover.d weighted.d multivalue.d datacenter.d geolocation.d/maps.d geolocation.d/resources.d; do
-		_dir=conf.d/$_d
-		mkdir -p $_dir
-		touch $_dir/_default
+		__dir=conf.d/$_d
+		mkdir -p $__dir
+		touch $__dir/_default
 	done
 
 	_f=conf.d/datacenter.d/_generic
