@@ -126,6 +126,7 @@ _repo_add_file() {
 _vars_to_env() {
 	cd $SITE_ROOT
 
+	ls vars | grep ^SESSION_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/session.env
 	ls vars | grep ^MONITOR_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/monitor.env
 	ls vars | grep ^NODE_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/node.env
 	ls vars | grep ^GATEWAY_ | while read f; do echo export $f=\'$(cat vars/$f)\'; done >$env_dir/gateway.env
@@ -327,8 +328,8 @@ _repo_init() {
 
 	echo "export DOMAIN=$DOMAIN" >$env_dir/base.env
 
-	if [ ! -f "$VARS/MBR_DOMAIN_SSL" ]; then
-		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/mbr.$DOMAIN/privkey.pem;" >$VARS/MBR_DOMAIN_SSL
+	if [ ! -f "$VARS/SESSION_DOMAIN_SSL" ]; then
+		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/mbr.$DOMAIN/privkey.pem;" >$VARS/SESSION_DOMAIN_SSL
 	fi
 
 	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
