@@ -345,6 +345,10 @@ _repo_init() {
 
 	if [ ! -f "$VARS/STAT_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/stat.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/stat.mbr.$DOMAIN/privkey.pem;" >$VARS/STAT_DOMAIN_SSL
+
+	fi
+	if [ ! -f "$VARS/STAT_PROMETHEUS_SCHEME" ]; then
+		echo "http" >$VARS/STAT_PROMETHEUS_SCHEME
 	fi
 
 	if [ ! -f "$VARS/GIT_PRIVATE_DOMAIN" ]; then
