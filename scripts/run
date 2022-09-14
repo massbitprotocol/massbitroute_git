@@ -153,8 +153,7 @@ _vars_to_env() {
 
 		}
 		END{print cfg"}"}' $env_dir/env.sh >$env_dir/env.lua
-	mkdir -p $SITE_ROOT/src
-	cp $env_dir/env.lua $SITE_ROOT/src/env.lua
+
 }
 
 _repo_add() {
@@ -270,7 +269,8 @@ EOF
   }
 EOF
 	fi
-	#cd $SITE_ROOT
+	cd $SITE_ROOT
+
 }
 
 _update_repo_branch() {
@@ -282,7 +282,9 @@ _update_repo_branch() {
 	case $_name1 in
 	gwmandeploy)
 		_repo_gwmandeploy $_dir
+
 		;;
+
 	esac
 	_name=${_name1^^}
 
@@ -347,6 +349,7 @@ _repo_init() {
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/stat.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/stat.mbr.$DOMAIN/privkey.pem;" >$VARS/STAT_DOMAIN_SSL
 
 	fi
+
 	if [ ! -f "$VARS/STAT_PROMETHEUS_SCHEME" ]; then
 		echo "http" >$VARS/STAT_PROMETHEUS_SCHEME
 	fi
@@ -382,8 +385,9 @@ _repo_init() {
 _repo_clear() {
 
 	for _r in env ssl gwmandeploy apideploy mkagentdeploy; do
-		echo rm -rf $SITE_ROOT/data/$_r
-		rm -rf $SITE_ROOT/data/$_r
+		echo rm -rf $SITE_ROOT/$_r
+		rm -rf $SITE_ROOT/$_r
+
 		echo rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
 
 		rm -rf $SITE_ROOT/data/repo/massbitroute/${_r}.git
