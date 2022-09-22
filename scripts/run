@@ -396,6 +396,8 @@ _update() {
 	echo "Update"
 	_repo_init
 
+	$SITE_ROOT/scripts/cert.sh _renew
+	
 	# _repo_create_default
 
 	# _update_repos
