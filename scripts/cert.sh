@@ -23,8 +23,8 @@ _prepare_gateway() {
 	ssldir=/massbit/massbitroute/app/src/sites/services/git/data/ssl
 	tmpd=$(mktemp -d)
 	mkdir -p $tmpd/{live,archive}
-	cp -rf $tmpd/archive/{eth,matic}* $tmpd/archive/
-	cp -rf $tmpd/live/{eth,matic}* $tmpd/live/
+	cp -rf /etc/letsencrypt/archive/{eth,matic}* $tmpd/archive/
+	cp -rf /etc/letsencrypt/live/{eth,matic}* $tmpd/live/
 	cd $tmpd
 	tar -cvzf gateway_ssl.tar.gz *
 
