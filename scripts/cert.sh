@@ -18,13 +18,6 @@ _get() {
 _get_mydomain() {
 	domain=$1
 	_get $domain
-	_get bsc-mainnet.$domain
-	_get matic-mainnet.$domain
-	_get matic-testnet.$domain
-	_get eth-mainnet.$domain
-	_get eth-rinkeby.$domain
-	_get dot-mainnet.$domain
-	cat /tmp/ssl/* | awk '/_acme-challenge.* CNAME .*.auth.acme-dns.io./'
 }
 _renew() {
 	certbot renew
