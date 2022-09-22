@@ -1,7 +1,7 @@
 #!/bin/bash
 dir=$(dirname $(realpath $0))
 _install() {
-    apt update
+	apt update
 	#apt-add-repository ppa:certbot/certbot
 	apt install -y certbot
 	# wget https://github.com/joohoi/acme-dns-certbot-joohoi/raw/master/acme-dns-auth.py
@@ -11,11 +11,12 @@ _install() {
 }
 _get() {
 	domain=$1
-	certbot certonly --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --preferred-challenges dns --debug-challenges -d \*.$domain -d $domain
+	email=product@massbit.io
+	certbot certonly --non-interactive --agree-tos -m $email --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --preferred-challenges dns --debug-challenges -d \*.$domain -d $domain
 }
-_get_mydomain(){
-    domain=$1
-    _get $domain
+_get_mydomain() {
+	domain=$1
+	_get $domain
 }
 _renew() {
 	certbot renew
