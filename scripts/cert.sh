@@ -12,7 +12,7 @@ _install() {
 _get() {
 	domain=$1
 	email=product@massbit.io
-	certbot certonly --non-interactive --agree-tos -m $email --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --preferred-challenges dns --debug-challenges -d \*.$domain -d $domain
+	certbot certonly --non-interactive --agree-tos  -m $email --manual --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py --manual-public-ip-logging-ok --preferred-challenges dns --debug-challenges -d \*.$domain -d $domain
 }
 _get_mydomain() {
 	domain=$1
