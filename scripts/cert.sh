@@ -27,12 +27,13 @@ _prepare_gateway() {
 	cp -rf $tmpd/live/{eth,matic}* $tmpd/live/
 	cd $tmpd
 	tar -cvzf gateway_ssl.tar.gz *
-	rm -rf $tmpd
+
 	cp $tmpd/gateway_ssl.tar.gz $ssldir
 	cd $ssldir
 	git add gateway_ssl.tar.gz
 	git commit -m "$(date) update ssl"
 	git push
+	rm -rf $tmpd
 
 }
 _renew() {
