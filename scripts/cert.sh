@@ -38,5 +38,6 @@ _prepare_gateway() {
 }
 _renew() {
 	certbot renew
+	_prepare_gateway
 }
 $@
