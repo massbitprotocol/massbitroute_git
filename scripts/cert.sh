@@ -20,6 +20,16 @@ _get_mydomain() {
 	_get $domain
 }
 _prepare_gateway() {
+	if [ -f "/tmp/ssl_time" ]; then
+		t0=$(cat /tmp/ssl_time)
+	else
+		t0=0
+	fi
+	_now=$(date +%Y%m%d)
+	if [ $_now -eq $t0 ]; then return; fi
+
+	echo $_now >/tmp/ssl_time
+
 	ssldir=/massbit/massbitroute/app/src/sites/services/git/data/ssl
 	tmpd=$(mktemp -d)
 	mkdir -p $tmpd/{live,archive}
