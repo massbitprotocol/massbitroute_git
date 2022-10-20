@@ -421,9 +421,19 @@ _update_tag() {
 	return $_tag_update
 
 }
+_repo_update() {
+	for r in \
+		$service_dir/mkagent \
+		$mbr_root/gbc \
+		$mbr_root/gbc/bin/.asdf; do
+
+		git -C $r pull
+	done
+}
 
 _update() {
 	echo "Update"
+	_repo_update
 	_repo_init
 
 	$SITE_ROOT/scripts/cert.sh _renew
