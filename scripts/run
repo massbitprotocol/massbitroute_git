@@ -424,7 +424,7 @@ _update_tag() {
 
 _update() {
 	echo "Update"
-	# _repo_init
+	_repo_init
 
 	$SITE_ROOT/scripts/cert.sh _renew
 
