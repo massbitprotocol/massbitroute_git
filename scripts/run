@@ -331,6 +331,9 @@ _repo_init() {
 	if [ ! -f "$VARS/SESSION_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/mbr.$DOMAIN/privkey.pem;" >$VARS/SESSION_DOMAIN_SSL
 	fi
+	if [ ! -f "$VARS/MONITOR_SCHEME" ]; then
+		echo "http" >$VARS/MONITOR_SCHEME
+	fi
 
 	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/node.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/node.mbr.$DOMAIN/privkey.pem;" >$VARS/NODE_DOMAIN_SSL
