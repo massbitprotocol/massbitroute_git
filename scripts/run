@@ -333,6 +333,9 @@ _repo_init() {
 	if [ ! -f "$VARS/SESSION_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/mbr.$DOMAIN/privkey.pem;" >$VARS/SESSION_DOMAIN_SSL
 	fi
+	if [ ! -f "$VARS/MONITOR_SCHEME" ]; then
+		echo "http" >$VARS/MONITOR_SCHEME
+	fi
 
 	if [ ! -f "$VARS/NODE_DOMAIN_SSL" ]; then
 		echo "#listen 443 ssl;ssl_certificate /etc/letsencrypt/live/node.mbr.$DOMAIN/fullchain.pem;ssl_certificate_key /etc/letsencrypt/live/node.mbr.$DOMAIN/privkey.pem;" >$VARS/NODE_DOMAIN_SSL
@@ -396,14 +399,58 @@ _repo_clear() {
 	rm $SITE_ROOT/vars/GIT_*
 }
 
+_update_tag() {
+	PORTAL_DOMAIN=portal.$DOMAIN
+	git="git -C $SITE_ROOT"
+	_v=$($git config --get remote.origin.url | awk -F'/' '{print $NF}')
+	tmp=$(mktemp)
+	curl -sfkL http://$PORTAL_DOMAIN/deploy/info/version/$_v >$tmp
+	if [ $? -ne 0 ]; then
+		rm $tmp
+		return 0
+	fi
+
+	_tag=$(cat $tmp)
+
+	rm $tmp
+
+	_my_tag=$($git describe --tags)
+	_tag_update=0
+	if [ "$_tag" != "$_my_tag" ]; then
+		$git fetch --all --tags --prune
+		$git checkout $_tag
+		_tag_update=1
+	fi
+
+	return $_tag_update
+
+}
+_repo_update() {
+	for r in \
+		$service_dir/mkagent \
+		$mbr_root/gbc \
+		$mbr_root/gbc/bin/.asdf; do
+
+		git -C $r pull
+	done
+}
+
 _update() {
 	echo "Update"
+	_repo_update
 	_repo_init
+
+	$SITE_ROOT/scripts/cert.sh _renew
 
 	# _repo_create_default
 
 	# _update_repos
 	_st_update=$?
+
+	_update_tag
+	if [ $_st_update -eq 0 ]; then
+		_st_update=$?
+	fi
 
 	return $_st_update
 
