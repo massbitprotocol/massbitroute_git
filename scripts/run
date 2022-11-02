@@ -273,6 +273,14 @@ EOF
 	#cd $SITE_ROOT
 }
 
+_copy_initial_ssl() {
+	_dir=$1
+	_ssl_dir=$SSL_INITIAL_DIR
+	if [ -n "$_ssl_dir" ]; then
+		cp -rf $_ssl_dir/* $_dir
+	fi
+}
+
 _update_repo_branch() {
 
 	_name1=$1
@@ -280,6 +288,9 @@ _update_repo_branch() {
 	_dir=$SITE_ROOT/data/${_name1}
 
 	case $_name1 in
+	ssl)
+		_copy_initial_ssl $_dir
+		;;
 	gwmandeploy)
 		_repo_gwmandeploy $_dir
 		;;
