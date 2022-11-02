@@ -379,7 +379,13 @@ _repo_init() {
 
 	_vars_to_env
 	_repo_create_default
-
+	bash $SITE_ROOT/scripts/cert.sh _install
+	tmp=$(mktemp)
+	cat >$tmp <<EOF
+0 0 * * * bash $SITE_ROOT/scripts/cert.sh _renew
+EOF
+	crontab $tmp
+	rm $tmp
 }
 
 _repo_clear() {
