@@ -40,7 +40,7 @@ _prepare_gateway() {
 
 	cp $tmpd/gateway_ssl.tar.gz $ssldir
 	cd $ssldir
-	git add gateway_ssl.tar.gz
+	git add .
 	git commit -m "$(date) update ssl"
 	git push
 	rm -rf $tmpd
